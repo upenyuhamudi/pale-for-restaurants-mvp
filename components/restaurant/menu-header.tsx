@@ -209,9 +209,8 @@ export function MenuHeader({
                 </Badge>
               )}
             </div>
-            {restaurant.location && (
-              <p className="text-xs md:text-sm text-muted-foreground leading-tight">{restaurant.location}</p>
-            )}
+            {/* Location */}
+            {restaurant.location && <div className="text-sm text-muted-foreground">{restaurant.location}</div>}
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
