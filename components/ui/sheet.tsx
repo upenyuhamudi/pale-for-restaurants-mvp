@@ -1,96 +1,47 @@
 "use client"
 
 import * as React from "react"
+import * as SheetPrimitive from "@radix-ui/react-dialog"
 import { XIcon } from "lucide-react"
+
 import { cn } from "@/lib/utils"
 
-interface SheetContextType {
-  open: boolean
-  onOpenChange: (open: boolean) => void
-}
-
-const SheetContext = React.createContext<SheetContextType | null>(null)
-
-function Sheet({
-  open,
-  onOpenChange,
-  children,
-}: {
-  open?: boolean
-  onOpenChange?: (open: boolean) => void
-  children: React.ReactNode
-}) {
-  const [isOpen, setIsOpen] = React.useState(open || false)
-
-  const handleOpenChange = React.useCallback(
-    (newOpen: boolean) => {
-      setIsOpen(newOpen)
-      onOpenChange?.(newOpen)
-    },
-    [onOpenChange],
-  )
-
-  React.useEffect(() => {
-    if (open !== undefined) {
-      setIsOpen(open)
-    }
-  }, [open])
-
-  return (
-    <SheetContext.Provider value={{ open: isOpen, onOpenChange: handleOpenChange }}>{children}</SheetContext.Provider>
-  )
+function Sheet({ ...props }: React.ComponentProps<typeof SheetPrimitive.Root>) {
+  return <SheetPrimitive.Root data-slot="sheet" {...props} />
 }
 
 function SheetTrigger({
-  children,
-  asChild,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
-  const context = React.useContext(SheetContext)
-
-  const handleClick = () => {
-    context?.onOpenChange(true)
-  }
-
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, { onClick: handleClick })
-  }
-
-  return (
-    <button onClick={handleClick} {...props}>
-      {children}
-    </button>
-  )
+}: React.ComponentProps<typeof SheetPrimitive.Trigger>) {
+  return <SheetPrimitive.Trigger data-slot="sheet-trigger" {...props} />
 }
 
 function SheetClose({
-  children,
-  asChild,
   ...props
-}: React.ButtonHTMLAttributes<HTMLButtonElement> & { asChild?: boolean }) {
-  const context = React.useContext(SheetContext)
+}: React.ComponentProps<typeof SheetPrimitive.Close>) {
+  return <SheetPrimitive.Close data-slot="sheet-close" {...props} />
+}
 
-  const handleClick = () => {
-    context?.onOpenChange(false)
-  }
+function SheetPortal({
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Portal>) {
+  return <SheetPrimitive.Portal data-slot="sheet-portal" {...props} />
+}
 
-  if (asChild && React.isValidElement(children)) {
-    return React.cloneElement(children, { onClick: handleClick })
-  }
-
+function SheetOverlay({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Overlay>) {
   return (
-    <button onClick={handleClick} {...props}>
-      {children}
-    </button>
+    <SheetPrimitive.Overlay
+      data-slot="sheet-overlay"
+      className={cn(
+        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+        className
+      )}
+      {...props}
+    />
   )
-}
-
-function SheetPortal({ children }: { children: React.ReactNode }) {
-  return typeof document !== "undefined" ? React.createPortal(children, document.body) : null
-}
-
-function SheetOverlay({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("fixed inset-0 z-50 bg-black/50 animate-in fade-in-0", className)} {...props} />
 }
 
 function SheetContent({
@@ -98,54 +49,91 @@ function SheetContent({
   children,
   side = "right",
   ...props
-}: React.HTMLAttributes<HTMLDivElement> & {
+}: React.ComponentProps<typeof SheetPrimitive.Content> & {
   side?: "top" | "right" | "bottom" | "left"
 }) {
-  const context = React.useContext(SheetContext)
-
-  if (!context?.open) return null
-
   return (
     <SheetPortal>
-      <SheetOverlay onClick={() => context.onOpenChange(false)} />
-      <div
+      <SheetOverlay />
+      <SheetPrimitive.Content
+        data-slot="sheet-content"
         className={cn(
-          "bg-background fixed z-50 flex flex-col gap-4 shadow-lg transition-transform duration-300 ease-in-out",
-          side === "right" && "inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm animate-in slide-in-from-right",
-          side === "left" && "inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm animate-in slide-in-from-left",
-          side === "top" && "inset-x-0 top-0 h-auto border-b animate-in slide-in-from-top",
-          side === "bottom" && "inset-x-0 bottom-0 h-auto border-t animate-in slide-in-from-bottom",
-          className,
+          "bg-background data-[state=open]:animate-in data-[state=closed]:animate-out fixed z-50 flex flex-col gap-4 shadow-lg transition ease-in-out data-[state=closed]:duration-300 data-[state=open]:duration-500",
+          side === "right" &&
+            "data-[state=closed]:slide-out-to-right data-[state=open]:slide-in-from-right inset-y-0 right-0 h-full w-3/4 border-l sm:max-w-sm",
+          side === "left" &&
+            "data-[state=closed]:slide-out-to-left data-[state=open]:slide-in-from-left inset-y-0 left-0 h-full w-3/4 border-r sm:max-w-sm",
+          side === "top" &&
+            "data-[state=closed]:slide-out-to-top data-[state=open]:slide-in-from-top inset-x-0 top-0 h-auto border-b",
+          side === "bottom" &&
+            "data-[state=closed]:slide-out-to-bottom data-[state=open]:slide-in-from-bottom inset-x-0 bottom-0 h-auto border-t",
+          className
         )}
         {...props}
       >
         {children}
-        <button
-          onClick={() => context.onOpenChange(false)}
-          className="absolute top-4 right-4 rounded-sm opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-none"
-        >
+        <SheetPrimitive.Close className="ring-offset-background focus:ring-ring data-[state=open]:bg-secondary absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none">
           <XIcon className="size-4" />
           <span className="sr-only">Close</span>
-        </button>
-      </div>
+        </SheetPrimitive.Close>
+      </SheetPrimitive.Content>
     </SheetPortal>
   )
 }
 
-function SheetHeader({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("flex flex-col gap-1.5 p-4", className)} {...props} />
+function SheetHeader({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-header"
+      className={cn("flex flex-col gap-1.5 p-4", className)}
+      {...props}
+    />
+  )
 }
 
-function SheetFooter({ className, ...props }: React.HTMLAttributes<HTMLDivElement>) {
-  return <div className={cn("mt-auto flex flex-col gap-2 p-4", className)} {...props} />
+function SheetFooter({ className, ...props }: React.ComponentProps<"div">) {
+  return (
+    <div
+      data-slot="sheet-footer"
+      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
+      {...props}
+    />
+  )
 }
 
-function SheetTitle({ className, ...props }: React.HTMLAttributes<HTMLHeadingElement>) {
-  return <h2 className={cn("text-foreground font-semibold", className)} {...props} />
+function SheetTitle({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Title>) {
+  return (
+    <SheetPrimitive.Title
+      data-slot="sheet-title"
+      className={cn("text-foreground font-semibold", className)}
+      {...props}
+    />
+  )
 }
 
-function SheetDescription({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-muted-foreground text-sm", className)} {...props} />
+function SheetDescription({
+  className,
+  ...props
+}: React.ComponentProps<typeof SheetPrimitive.Description>) {
+  return (
+    <SheetPrimitive.Description
+      data-slot="sheet-description"
+      className={cn("text-muted-foreground text-sm", className)}
+      {...props}
+    />
+  )
 }
 
-export { Sheet, SheetTrigger, SheetClose, SheetContent, SheetHeader, SheetFooter, SheetTitle, SheetDescription }
+export {
+  Sheet,
+  SheetTrigger,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetFooter,
+  SheetTitle,
+  SheetDescription,
+}
