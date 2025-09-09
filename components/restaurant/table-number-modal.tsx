@@ -40,21 +40,21 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" hideClose>
+      <DialogContent className="w-[95vw] sm:max-w-md mx-auto p-4 sm:p-6" hideClose>
         <DialogHeader className="text-center">
-          <DialogTitle className="text-xl font-semibold">Welcome!</DialogTitle>
-          <DialogDescription className="text-base">
+          <DialogTitle className="text-lg sm:text-xl font-semibold">Welcome!</DialogTitle>
+          <DialogDescription className="text-sm sm:text-base">
             Please enter your table number to get started with your order.
             <br />
-            <span className="text-sm text-muted-foreground mt-1 block">
+            <span className="text-xs sm:text-sm text-muted-foreground mt-1 block">
               Your table number helps us deliver your order to the right location.
             </span>
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 sm:space-y-6 py-4">
           <div className="text-center">
-            <label htmlFor="name-input" className="block text-sm font-medium text-muted-foreground mb-2">
+            <label htmlFor="name-input" className="block text-xs sm:text-sm font-medium text-muted-foreground mb-2">
               Your Name
             </label>
             <Input
@@ -62,13 +62,13 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
               value={dinerName}
               onChange={(e) => setDinerName(e.target.value)}
               placeholder="Enter your name"
-              className="text-center text-lg font-medium h-12"
+              className="text-center text-base sm:text-lg font-medium h-12 sm:h-14"
               autoFocus
             />
           </div>
 
           <div className="text-center">
-            <label htmlFor="table-input" className="block text-sm font-medium text-muted-foreground mb-2">
+            <label htmlFor="table-input" className="block text-xs sm:text-sm font-medium text-muted-foreground mb-2">
               Table Number
             </label>
             <Input
@@ -79,16 +79,16 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
                 setTableNumber(value)
               }}
               placeholder="Enter table number"
-              className="text-center text-2xl font-semibold h-14 text-primary"
+              className="text-center text-xl sm:text-2xl font-semibold h-14 sm:h-16 text-primary"
               maxLength={3}
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col sm:flex-row gap-3 pt-4">
             <Button
               variant="outline"
               onClick={handleCancel}
-              className="flex-1 bg-transparent"
+              className="flex-1 bg-transparent h-12 text-sm sm:text-base"
               size="lg"
               disabled={isLoading}
             >
@@ -97,7 +97,7 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
             <Button
               onClick={handleConfirm}
               disabled={!dinerName.trim() || !tableNumber.trim() || isLoading}
-              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white"
+              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white h-12 text-sm sm:text-base"
               size="lg"
             >
               {isLoading ? (
