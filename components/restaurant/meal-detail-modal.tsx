@@ -252,7 +252,7 @@ export function MealDetailModal({
         preferences: Object.keys(preferences).length > 0 ? preferences : undefined,
       },
       fromPairingSuggestion,
-    ) // Pass the skip pairing flag
+    )
 
     toast({
       title: "Added to cart",

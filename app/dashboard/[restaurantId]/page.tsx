@@ -144,6 +144,12 @@ export default function RestaurantDashboard() {
     fetchMenuItems()
     fetchAnalytics()
 
+    const refreshInterval = setInterval(() => {
+      console.log("[v0] Auto-refreshing dashboard data...")
+      fetchOrders()
+      fetchAnalytics()
+    }, 10000)
+
     // Set up real-time subscription for orders
     const ordersSubscription = supabase
       .channel("orders-changes")
@@ -159,6 +165,7 @@ export default function RestaurantDashboard() {
       .subscribe()
 
     return () => {
+      clearInterval(refreshInterval)
       ordersSubscription.unsubscribe()
     }
   }, [restaurantId])
@@ -328,9 +335,8 @@ export default function RestaurantDashboard() {
 
       if (error) throw error
 
-      setOrders((prev) =>
-        prev.map((order) => (order.table_number === tableNumber ? { ...order, table_closed: true } : order)),
-      )
+      await fetchOrders()
+      await fetchAnalytics()
     } catch (error) {
       console.error("[v0] Error closing table:", error)
     }
@@ -920,7 +926,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
+                                              Sides: {item.side_ids.join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -933,7 +939,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{extraName}</span>
+                                                <span>{item.extra_ids[index]}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1097,7 +1103,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
+                                              Sides: {item.side_ids.join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1110,7 +1116,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{extraName}</span>
+                                                <span>{item.extra_ids[index]}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1274,7 +1280,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
+                                              Sides: {item.side_ids.join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1287,7 +1293,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{extraName}</span>
+                                                <span>{item.extra_ids[index]}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1493,7 +1499,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
+                                              Sides: {item.side_ids.join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1506,7 +1512,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{extraName}</span>
+                                                <span>{item.extra_ids[index]}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>

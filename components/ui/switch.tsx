@@ -3,57 +3,50 @@
 import * as React from "react"
 import { cn } from "@/lib/utils"
 
-export interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
+interface SwitchProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "onChange"> {
   checked?: boolean
   onCheckedChange?: (checked: boolean) => void
 }
 
-const Switch = React.forwardRef<HTMLButtonElement, SwitchProps>(
-  ({ className, checked = false, onCheckedChange, ...props }, ref) => {
-    const [internalChecked, setInternalChecked] = React.useState(checked)
+function Switch({ className, checked, onCheckedChange, disabled, ...props }: SwitchProps) {
+  const [isChecked, setIsChecked] = React.useState(checked || false)
 
-    const isControlled = onCheckedChange !== undefined
-    const isChecked = isControlled ? checked : internalChecked
-
-    const handleClick = () => {
-      const newChecked = !isChecked
-      if (isControlled) {
-        onCheckedChange?.(newChecked)
-      } else {
-        setInternalChecked(newChecked)
-      }
+  React.useEffect(() => {
+    if (checked !== undefined) {
+      setIsChecked(checked)
     }
+  }, [checked])
 
-    React.useEffect(() => {
-      if (!isControlled) {
-        setInternalChecked(checked)
-      }
-    }, [checked, isControlled])
+  const handleClick = () => {
+    if (disabled) return
+    const newChecked = !isChecked
+    setIsChecked(newChecked)
+    onCheckedChange?.(newChecked)
+  }
 
-    return (
-      <button
-        type="button"
-        role="switch"
-        aria-checked={isChecked}
-        ref={ref}
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={isChecked}
+      data-state={isChecked ? "checked" : "unchecked"}
+      onClick={handleClick}
+      disabled={disabled}
+      className={cn(
+        "peer inline-flex h-[1.15rem] w-8 shrink-0 items-center rounded-full border border-transparent shadow-sm transition-all outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+        isChecked ? "bg-primary" : "bg-input",
+        className,
+      )}
+      {...props}
+    >
+      <div
         className={cn(
-          "peer inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50",
-          isChecked ? "bg-primary" : "bg-input",
-          className,
+          "pointer-events-none block size-4 rounded-full bg-background ring-0 transition-transform",
+          isChecked ? "translate-x-[calc(100%-2px)]" : "translate-x-0",
         )}
-        onClick={handleClick}
-        {...props}
-      >
-        <span
-          className={cn(
-            "pointer-events-none block h-5 w-5 rounded-full bg-background shadow-lg ring-0 transition-transform",
-            isChecked ? "translate-x-5" : "translate-x-0",
-          )}
-        />
-      </button>
-    )
-  },
-)
-Switch.displayName = "Switch"
+      />
+    </button>
+  )
+}
 
 export { Switch }
