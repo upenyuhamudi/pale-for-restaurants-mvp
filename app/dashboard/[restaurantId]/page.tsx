@@ -28,6 +28,7 @@ import {
   Utensils,
   Phone,
   ShoppingBag,
+  BarChart3,
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { MenuItemForm } from "@/components/dashboard/menu-item-form"
@@ -143,12 +144,6 @@ export default function RestaurantDashboard() {
     fetchMenuItems()
     fetchAnalytics()
 
-    const refreshInterval = setInterval(() => {
-      console.log("[v0] Auto-refreshing dashboard data...")
-      fetchOrders()
-      fetchAnalytics()
-    }, 10000)
-
     // Set up real-time subscription for orders
     const ordersSubscription = supabase
       .channel("orders-changes")
@@ -164,7 +159,6 @@ export default function RestaurantDashboard() {
       .subscribe()
 
     return () => {
-      clearInterval(refreshInterval)
       ordersSubscription.unsubscribe()
     }
   }, [restaurantId])
@@ -334,8 +328,9 @@ export default function RestaurantDashboard() {
 
       if (error) throw error
 
-      await fetchOrders()
-      await fetchAnalytics()
+      setOrders((prev) =>
+        prev.map((order) => (order.table_number === tableNumber ? { ...order, table_closed: true } : order)),
+      )
     } catch (error) {
       console.error("[v0] Error closing table:", error)
     }
@@ -458,16 +453,32 @@ export default function RestaurantDashboard() {
     return "No price set"
   }
 
-  const resolveExtraNames = (extraIds: string[], restaurant: any) => {
-    if (!extraIds) return []
-    // The extraIds are actually the extra names themselves, not IDs
-    return extraIds
+  const resolveSideNames = (sideIds: string[], restaurant: any) => {
+    if (!sideIds || !restaurant?.meals) return []
+
+    const allSideChoices = restaurant.meals.reduce((acc: string[], meal: any) => {
+      return [...acc, ...(meal.side_choices || [])]
+    }, [])
+
+    return sideIds.map((id) => {
+      // Find the side name in any meal's side_choices
+      const sideName = allSideChoices.find((choice: string) => choice === id)
+      return sideName || id
+    })
   }
 
-  const resolveSideNames = (sideIds: string[], restaurant: any) => {
-    if (!sideIds) return []
-    // The sideIds are actually the side names themselves, not IDs
-    return sideIds
+  const resolveExtraNames = (extraIds: string[], restaurant: any) => {
+    if (!extraIds || !restaurant?.meals) return []
+
+    const allExtraChoices = restaurant.meals.reduce((acc: string[], meal: any) => {
+      return [...acc, ...(meal.extra_choices || [])]
+    }, [])
+
+    return extraIds.map((id) => {
+      // Find the extra name in any meal's extra_choices
+      const extraName = allExtraChoices.find((choice: string) => choice === id)
+      return extraName || id
+    })
   }
 
   const ordersByTable = orders.reduce(
@@ -925,7 +936,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {item.side_ids.join(", ")}
+                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -938,7 +949,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{item.extra_ids[index]}</span>
+                                                <span>{extraName}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1102,7 +1113,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {item.side_ids.join(", ")}
+                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1115,7 +1126,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{item.extra_ids[index]}</span>
+                                                <span>{extraName}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1279,7 +1290,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {item.side_ids.join(", ")}
+                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1292,7 +1303,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{item.extra_ids[index]}</span>
+                                                <span>{extraName}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1498,7 +1509,7 @@ export default function RestaurantDashboard() {
                                           )}
                                           {item.side_ids && item.side_ids.length > 0 && (
                                             <div className="text-xs text-gray-500">
-                                              Sides: {item.side_ids.join(", ")}
+                                              Sides: {resolveSideNames(item.side_ids, restaurant).join(", ")}
                                             </div>
                                           )}
                                         </div>
@@ -1511,7 +1522,7 @@ export default function RestaurantDashboard() {
                                             <div key={index} className="flex justify-between items-center py-1 text-sm">
                                               <div className="flex items-center space-x-2 text-gray-600">
                                                 <span className="text-xs">+</span>
-                                                <span>{item.extra_ids[index]}</span>
+                                                <span>{extraName}</span>
                                               </div>
                                               <span className="text-gray-500">Extra</span>
                                             </div>
@@ -1592,284 +1603,471 @@ export default function RestaurantDashboard() {
                         <div key={status} className="flex items-center justify-between">
                           <div className="flex items-center space-x-2">
                             {getStatusIcon(status)}
-                            <span>{getStatusDisplayLabel(status)}</span>
+                            <span className="capitalize">{getStatusDisplayLabel(status)}</span>
                           </div>
-                          <span className="font-medium">{count}</span>
+                          <div className="flex items-center space-x-2">
+                            <span className="font-semibold">{count}</span>
+                            <div className="w-20 bg-gray-200 rounded-full h-2">
+                              <div
+                                className="bg-orange-500 h-2 rounded-full"
+                                style={{ width: `${(count / (analytics?.totalOrders || 1)) * 100}%` }}
+                              />
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
 
-                {/* Top Items */}
+                {/* Top Selling Items */}
                 <Card>
                   <CardHeader>
                     <CardTitle>Top Selling Items</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-3">
-                      {analytics?.topItems.map((item) => (
+                      {analytics?.topItems.map((item, index) => (
                         <div key={item.name} className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <span>{item.name}</span>
+                          <div className="flex items-center space-x-3">
+                            <div className="w-6 h-6 rounded-full bg-orange-100 flex items-center justify-center text-xs font-semibold text-orange-600">
+                              {index + 1}
+                            </div>
+                            <span className="font-medium">{item.name}</span>
                           </div>
-                          <span className="font-medium">{item.count}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Peak Hours */}
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Peak Hours</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
-                      {analytics?.peakHours.map((hourData) => (
-                        <div key={hourData.hour} className="flex items-center justify-between">
-                          <div className="flex items-center space-x-2">
-                            <Calendar className="w-4 h-4" />
-                            <span>
-                              {hourData.hour}:00 - {hourData.hour + 1}:00
-                            </span>
+                          <div className="text-right">
+                            <div className="font-semibold">{item.count} sold</div>
+                            <div className="text-sm text-gray-500">{formatCurrency(item.revenue)}</div>
                           </div>
-                          <span className="font-medium">{hourData.count}</span>
                         </div>
                       ))}
                     </div>
                   </CardContent>
                 </Card>
               </div>
+
+              {/* Peak Hours */}
+              <Card>
+                <CardHeader>
+                  <CardTitle>Peak Hours</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {analytics?.peakHours.map((peak) => (
+                      <div key={peak.hour} className="text-center p-3 bg-gray-50 rounded-lg">
+                        <div className="text-lg font-bold text-orange-600">
+                          {peak.hour.toString().padStart(2, "0")}:00
+                        </div>
+                        <div className="text-sm text-gray-600">{peak.count} orders</div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              {/* Empty State */}
+              {analytics?.totalOrders === 0 && (
+                <Card>
+                  <CardContent className="flex flex-col items-center justify-center py-12">
+                    <BarChart3 className="h-12 w-12 text-gray-400 mb-4" />
+                    <h3 className="text-lg font-semibold text-gray-900 mb-2">No Analytics Data</h3>
+                    <p className="text-gray-500 text-center max-w-sm">
+                      Analytics will appear here once you start receiving orders. Data includes revenue, service times,
+                      and popular items.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
             </TabsContent>
 
             <TabsContent value="menu" className="space-y-6">
-              <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-900">Menu Management</h2>
-                <Button onClick={() => handleAddItem("meal")}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Meal
-                </Button>
-                <Button onClick={() => handleAddItem("drink")}>
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add Drink
-                </Button>
-              </div>
+              {/* Menu Management Section - existing code with minor updates */}
+              <Tabs value={menuTab} onValueChange={setMenuTab} className="space-y-6">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h2 className="text-2xl font-bold">Menu Management</h2>
+                    <div className="flex space-x-2">
+                      <Button onClick={() => handleAddItem("meal")} className="bg-orange-600 hover:bg-orange-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Meal
+                      </Button>
+                      <Button onClick={() => handleAddItem("drink")} className="bg-blue-600 hover:bg-blue-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Drink
+                      </Button>
+                    </div>
+                  </div>
 
-              <Tabs value={menuTab} onValueChange={setMenuTab} className="space-y-4">
-                <TabsList>
-                  <TabsTrigger value="meals">Meals</TabsTrigger>
-                  <TabsTrigger value="drinks">Drinks</TabsTrigger>
-                </TabsList>
+                  <TabsList>
+                    <TabsTrigger value="meals">Meals ({meals.length})</TabsTrigger>
+                    <TabsTrigger value="drinks">Drinks ({drinks.length})</TabsTrigger>
+                  </TabsList>
 
-                <TabsContent value="meals" className="space-y-4">
-                  {meals.length === 0 ? (
-                    <Card>
-                      <CardContent className="text-center py-12">
-                        <Menu className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No meals added yet</h3>
-                        <p className="text-gray-500">Add your first meal to the menu.</p>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <TabsContent value="meals">
+                    <div className="space-y-4">
                       {meals.map((meal) => (
                         <Card key={meal.id}>
-                          <CardHeader>
-                            <CardTitle>{meal.name}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <p className="text-sm text-gray-500">{meal.description}</p>
-                            <p className="text-lg font-semibold">{getItemPrice(meal)}</p>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm" onClick={() => handleEditItem(meal, "meal")}>
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </Button>
-                              <Button variant="destructive" size="sm" onClick={() => handleDeleteItem(meal.id, "meal")}>
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => toggleAvailability(meal.id, "meal", meal.availability_status)}
-                              >
-                                {meal.availability_status === "available" ? (
-                                  <>
-                                    <EyeOff className="w-4 h-4 mr-2" />
-                                    Unavailable
-                                  </>
-                                ) : (
-                                  <>
-                                    <Eye className="w-4 h-4 mr-2" />
-                                    Available
-                                  </>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                {meal.image_url && (
+                                  <img
+                                    src={meal.image_url || "/placeholder.svg"}
+                                    alt={meal.name}
+                                    className="w-16 h-16 rounded-lg object-cover"
+                                  />
                                 )}
-                              </Button>
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2">
+                                    <h3 className="font-semibold">{meal.name}</h3>
+                                    <Badge
+                                      variant={meal.availability_status === "available" ? "default" : "secondary"}
+                                      className={
+                                        meal.availability_status === "available" ? "bg-green-100 text-green-800" : ""
+                                      }
+                                    >
+                                      {meal.availability_status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-gray-600 mt-1">{meal.description}</p>
+                                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span className="font-medium text-orange-600">{getItemPrice(meal)}</span>
+                                    {meal.dietary_category && <span>• {meal.dietary_category}</span>}
+                                    {meal.allowed_sides > 0 && <span>• {meal.allowed_sides} sides allowed</span>}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => toggleAvailability(meal.id, "meal", meal.availability_status)}
+                                >
+                                  {meal.availability_status === "available" ? (
+                                    <EyeOff className="w-4 h-4" />
+                                  ) : (
+                                    <Eye className="w-4 h-4" />
+                                  )}
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => handleEditItem(meal, "meal")}>
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteItem(meal.id, "meal")}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
                       ))}
+                      {meals.length === 0 && (
+                        <Card>
+                          <CardContent className="p-8 text-center">
+                            <Utensils className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No meals yet</h3>
+                            <p className="text-gray-500 mb-4">Add your first meal to get started with your menu.</p>
+                            <Button onClick={() => handleAddItem("meal")} className="bg-orange-600 hover:bg-orange-700">
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add First Meal
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
                     </div>
-                  )}
-                </TabsContent>
+                  </TabsContent>
 
-                <TabsContent value="drinks" className="space-y-4">
-                  {drinks.length === 0 ? (
-                    <Card>
-                      <CardContent className="text-center py-12">
-                        <Menu className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No drinks added yet</h3>
-                        <p className="text-gray-500">Add your first drink to the menu.</p>
-                      </CardContent>
-                    </Card>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  <TabsContent value="drinks" className="space-y-4">
+                    <div className="grid gap-4">
                       {drinks.map((drink) => (
                         <Card key={drink.id}>
-                          <CardHeader>
-                            <CardTitle>{drink.name}</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-2">
-                            <p className="text-sm text-gray-500">{drink.description}</p>
-                            <p className="text-lg font-semibold">{getItemPrice(drink)}</p>
-                            <div className="flex items-center space-x-2">
-                              <Button variant="outline" size="sm" onClick={() => handleEditItem(drink, "drink")}>
-                                <Edit className="w-4 h-4 mr-2" />
-                                Edit
-                              </Button>
-                              <Button
-                                variant="destructive"
-                                size="sm"
-                                onClick={() => handleDeleteItem(drink.id, "drink")}
-                              >
-                                <Trash2 className="w-4 h-4 mr-2" />
-                                Delete
-                              </Button>
-                              <Button
-                                variant="secondary"
-                                size="sm"
-                                onClick={() => toggleAvailability(drink.id, "drink", drink.availability_status)}
-                              >
-                                {drink.availability_status === "available" ? (
-                                  <>
-                                    <EyeOff className="w-4 h-4 mr-2" />
-                                    Unavailable
-                                  </>
-                                ) : (
-                                  <>
-                                    <Eye className="w-4 h-4 mr-2" />
-                                    Available
-                                  </>
+                          <CardContent className="p-4">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-4">
+                                {drink.image_url && (
+                                  <img
+                                    src={drink.image_url || "/placeholder.svg"}
+                                    alt={drink.name}
+                                    className="w-16 h-16 rounded-lg object-cover"
+                                  />
                                 )}
-                              </Button>
+                                <div className="flex-1">
+                                  <div className="flex items-center space-x-2">
+                                    <h3 className="font-semibold">{drink.name}</h3>
+                                    <Badge
+                                      variant={drink.availability_status === "available" ? "default" : "secondary"}
+                                      className={
+                                        drink.availability_status === "available" ? "bg-green-100 text-green-800" : ""
+                                      }
+                                    >
+                                      {drink.availability_status}
+                                    </Badge>
+                                  </div>
+                                  <p className="text-sm text-gray-600 mt-1">{drink.description}</p>
+                                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span className="font-medium text-blue-600">{getItemPrice(drink)}</span>
+                                    {drink.tasting_notes && drink.tasting_notes.length > 0 && (
+                                      <span>• {drink.tasting_notes.slice(0, 2).join(", ")}</span>
+                                    )}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center space-x-2">
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => toggleAvailability(drink.id, "drink", drink.availability_status)}
+                                >
+                                  {drink.availability_status === "available" ? (
+                                    <EyeOff className="w-4 h-4" />
+                                  ) : (
+                                    <Eye className="w-4 h-4" />
+                                  )}
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => handleEditItem(drink, "drink")}>
+                                  <Edit className="w-4 h-4" />
+                                </Button>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => handleDeleteItem(drink.id, "drink")}
+                                  className="text-red-600 hover:text-red-700"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </Button>
+                              </div>
                             </div>
                           </CardContent>
                         </Card>
                       ))}
+                      {drinks.length === 0 && (
+                        <Card>
+                          <CardContent className="text-center py-12">
+                            <Menu className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No drinks yet</h3>
+                            <p className="text-gray-500 mb-4">
+                              Start building your beverage menu by adding your first drink.
+                            </p>
+                            <Button onClick={() => handleAddItem("drink")} className="bg-blue-600 hover:bg-blue-700">
+                              <Plus className="w-4 h-4 mr-2" />
+                              Add First Drink
+                            </Button>
+                          </CardContent>
+                        </Card>
+                      )}
                     </div>
-                  )}
-                </TabsContent>
+                  </TabsContent>
+                </div>
               </Tabs>
             </TabsContent>
           </Tabs>
         </div>
+
+        {activeSection === "analytics" && (
+          <div className="space-y-6">
+            <div className="flex items-center justify-between">
+              <h2 className="text-2xl font-bold text-gray-900">Analytics Dashboard</h2>
+              <div className="flex items-center space-x-2">
+                <Calendar className="w-5 h-5 text-gray-400" />
+                <span className="text-sm text-gray-600">Today</span>
+              </div>
+            </div>
+
+            {/* Key Metrics */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Orders</p>
+                      <p className="text-3xl font-bold text-gray-900">{analytics?.totalOrders || 0}</p>
+                    </div>
+                    <div className="bg-blue-100 p-3 rounded-full">
+                      <Receipt className="w-6 h-6 text-blue-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Total Revenue</p>
+                      <p className="text-3xl font-bold text-gray-900">{formatCurrency(analytics?.totalRevenue || 0)}</p>
+                    </div>
+                    <div className="bg-green-100 p-3 rounded-full">
+                      <DollarSign className="w-6 h-6 text-green-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Average Order</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {formatCurrency(analytics?.averageOrderValue || 0)}
+                      </p>
+                    </div>
+                    <div className="bg-orange-100 p-3 rounded-full">
+                      <TrendingUp className="w-6 h-6 text-orange-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm text-gray-600">Active Tables</p>
+                      <p className="text-3xl font-bold text-gray-900">
+                        {
+                          Object.keys(ordersByTable).filter((table) =>
+                            ordersByTable[table].some((order: any) => !order.table_closed),
+                          ).length
+                        }
+                      </p>
+                    </div>
+                    <div className="bg-purple-100 p-3 rounded-full">
+                      <Users className="w-6 h-6 text-purple-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Top Items */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Top Selling Items</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-4">
+                  {analytics?.topItems.map((item, index) => (
+                    <div key={item.name} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-center space-x-4">
+                        <div className="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold">
+                          {index + 1}
+                        </div>
+                        <div>
+                          <p className="font-medium">{item.name}</p>
+                          <p className="text-sm text-gray-600">{item.count} orders</p>
+                        </div>
+                      </div>
+                      <p className="font-bold text-green-600">{formatCurrency(item.revenue)}</p>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New {itemType === "meal" ? "Meal" : "Drink"}</DialogTitle>
+            </DialogHeader>
+            <MenuItemForm
+              restaurantId={restaurantId}
+              itemType={itemType}
+              onSave={handleSaveItem}
+              onCancel={() => setShowAddModal(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit {itemType === "meal" ? "Meal" : "Drink"}</DialogTitle>
+            </DialogHeader>
+            {editingItem && (
+              <MenuItemForm
+                restaurantId={restaurantId}
+                itemType={itemType}
+                item={editingItem}
+                onSave={handleSaveItem}
+                onCancel={() => setShowEditModal(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
       </main>
-
-      <Dialog open={showAddModal} onOpenChange={setShowAddModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Add New {itemType === "meal" ? "Meal" : "Drink"}</DialogTitle>
-          </DialogHeader>
-          <MenuItemForm
-            restaurantId={restaurantId}
-            type={itemType}
-            onSave={handleSaveItem}
-            onCancel={() => setShowAddModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showEditModal} onOpenChange={setShowEditModal}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Edit {itemType === "meal" ? "Meal" : "Drink"}</DialogTitle>
-          </DialogHeader>
-          <MenuItemForm
-            restaurantId={restaurantId}
-            type={itemType}
-            item={editingItem}
-            onSave={handleSaveItem}
-            onCancel={() => setShowEditModal(false)}
-          />
-        </DialogContent>
-      </Dialog>
     </div>
   )
 }
 
-function LiveTimer({ createdAt, status }: { createdAt: string; status: string }) {
-  const [timeElapsed, setTimeElapsed] = useState(getTimeSince(createdAt))
+const LiveTimer = ({ createdAt, status }: { createdAt: string; status: string }) => {
+  const [timeElapsed, setTimeElapsed] = useState(0)
+  const [completionTime, setCompletionTime] = useState<Date | null>(null)
+  const [finalElapsedTime, setFinalElapsedTime] = useState<number | null>(null)
 
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      setTimeElapsed(getTimeSince(createdAt))
-    }, 60000) // Update every minute
+    if (status === "completed" && !completionTime && finalElapsedTime === null) {
+      const now = new Date()
+      const orderTime = new Date(createdAt)
+      const finalTime = Math.floor((now.getTime() - orderTime.getTime()) / 1000)
+      setFinalElapsedTime(finalTime)
+      setCompletionTime(now)
+      return
+    }
 
-    return () => clearInterval(intervalId)
-  }, [createdAt])
+    // Don't update timer if order is served (completed)
+    if (status === "completed") {
+      return
+    }
 
-  return (
-    <div className="absolute top-2 right-2 bg-gray-100 text-gray-600 text-xs px-2 py-1 rounded-md">
-      {status === "pending" ? `Open for ${timeElapsed}` : `Served ${timeElapsed} ago`}
-    </div>
-  )
+    const updateTimer = () => {
+      const now = new Date()
+      const orderTime = new Date(createdAt)
+      const diffInSeconds = Math.floor((now.getTime() - orderTime.getTime()) / 1000)
+      setTimeElapsed(diffInSeconds)
+    }
+
+    // Update immediately
+    updateTimer()
+
+    // Update every second
+    const interval = setInterval(updateTimer, 1000)
+
+    return () => clearInterval(interval)
+  }, [createdAt, status, completionTime, finalElapsedTime])
+
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60)
+    const remainingSeconds = seconds % 60
+    return `${minutes.toString().padStart(2, "0")}:${remainingSeconds.toString().padStart(2, "0")}`
+  }
+
+  if (status === "completed") {
+    const timeToUse = finalElapsedTime !== null ? finalElapsedTime : timeElapsed
+    return (
+      <div className="absolute top-2 right-2 text-green-600 font-bold text-lg">Served in: {formatTime(timeToUse)}</div>
+    )
+  }
+
+  return <div className="absolute top-2 right-2 text-red-600 font-bold text-lg">{formatTime(timeElapsed)}</div>
 }
 
-function getTimeSince(dateString: string) {
-  const date = new Date(dateString)
+function getTimeSinceOrder(createdAt: string) {
   const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+  const orderTime = new Date(createdAt)
+  const diffInMinutes = Math.floor((now.getTime() - orderTime.getTime()) / (1000 * 60))
 
-  if (diffInSeconds < 60) {
-    return `${diffInSeconds} seconds`
-  }
-
-  const diffInMinutes = Math.floor(diffInSeconds / 60)
   if (diffInMinutes < 60) {
-    return `${diffInMinutes} minutes`
+    return `${diffInMinutes}m ago`
+  } else {
+    const hours = Math.floor(diffInMinutes / 60)
+    const minutes = diffInMinutes % 60
+    return `${hours}h ${minutes}m ago`
   }
-
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) {
-    return `${diffInHours} hours`
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24)
-  return `${diffInDays} days`
-}
-
-function getTimeSinceOrder(dateString: string) {
-  const date = new Date(dateString)
-  const now = new Date()
-  const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (diffInSeconds < 60) {
-    return `${diffInSeconds} seconds ago`
-  }
-
-  const diffInMinutes = Math.floor(diffInSeconds / 60)
-  if (diffInMinutes < 60) {
-    return `${diffInMinutes} minutes ago`
-  }
-
-  const diffInHours = Math.floor(diffInMinutes / 60)
-  if (diffInHours < 24) {
-    return `${diffInHours} hours ago`
-  }
-
-  const diffInDays = Math.floor(diffInHours / 24)
-  return `${diffInDays} days ago`
 }
