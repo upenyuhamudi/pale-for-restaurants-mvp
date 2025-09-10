@@ -105,13 +105,13 @@ export function BottomNavigation() {
   return (
     <>
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t z-50 shadow-lg">
-        <div className="flex items-center justify-around px-2 py-3">
+        <div className="flex items-center justify-around px-2 py-2">
           {/* Menu Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleMenuClick}
-            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 transition-colors min-h-[44px] ${
+            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 transition-colors min-h-[60px] ${
               isMenuPage
                 ? "text-brand-orange bg-brand-orange/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -126,7 +126,7 @@ export function BottomNavigation() {
             variant="ghost"
             size="sm"
             onClick={handleCartClick}
-            className="flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors relative min-h-[44px]"
+            className="flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors relative min-h-[60px]"
           >
             <div className="relative">
               <ShoppingCart className="w-5 h-5" />
@@ -150,7 +150,7 @@ export function BottomNavigation() {
             variant="ghost"
             size="sm"
             onClick={handleOrdersClick}
-            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 transition-colors min-h-[44px] ${
+            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-3 transition-colors min-h-[60px] ${
               isOrdersPage
                 ? "text-brand-orange bg-brand-orange/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -162,12 +162,13 @@ export function BottomNavigation() {
         </div>
       </div>
 
+      {/* Cart Sheet */}
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-        <SheetContent side="bottom" className="h-[90vh] p-0">
+        <SheetContent side="bottom" className="h-[90vh] p-0 md:h-[85vh]">
           <SheetHeader className="p-4 pb-3 md:p-6 md:pb-4">
-            <SheetTitle className="text-lg md:text-xl">Your Cart</SheetTitle>
+            <SheetTitle>Your Cart</SheetTitle>
           </SheetHeader>
-          <div className="px-4 pb-4 md:px-6 md:pb-6 h-full overflow-hidden">
+          <div className="px-4 pb-4 h-full overflow-hidden md:px-6 md:pb-6">
             <CartSidebar />
           </div>
         </SheetContent>

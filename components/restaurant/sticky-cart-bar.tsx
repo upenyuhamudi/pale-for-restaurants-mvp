@@ -132,16 +132,16 @@ export function StickyCartBar() {
 
   return (
     <>
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-3 md:p-4 z-50 shadow-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-3 z-50 shadow-lg md:p-4">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
-              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[52px] text-base font-semibold"
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white h-12 text-sm font-semibold min-h-[44px] md:text-base"
               size="lg"
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-4 h-4 md:w-5 md:h-5" />
                   <span>
                     {itemCount} item{itemCount !== 1 ? "s" : ""}
                   </span>
@@ -152,12 +152,12 @@ export function StickyCartBar() {
           </SheetTrigger>
 
           <SheetContent side="bottom" className="h-[85vh] md:h-[80vh]">
-            <SheetHeader className="pb-4">
-              <SheetTitle className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                <span className="text-lg md:text-xl">Your Order</span>
+            <SheetHeader>
+              <SheetTitle className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                <span className="text-base md:text-lg">Your Order</span>
                 {cart.table_number && (
-                  <div className="text-left sm:text-right">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
+                  <div className="text-center md:text-right">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
                       Table {cart.table_number}
                     </Badge>
                     {cart.diner_name && <p className="text-xs text-muted-foreground mt-1">{cart.diner_name}</p>}
@@ -166,19 +166,19 @@ export function StickyCartBar() {
               </SheetTitle>
             </SheetHeader>
 
-            <div className="mt-4 md:mt-6 space-y-4">
-              <div className="space-y-3 md:space-y-4 max-h-[55vh] md:max-h-[50vh] overflow-y-auto">
+            <div className="mt-4 space-y-4 md:mt-6">
+              <div className="space-y-3 max-h-[45vh] overflow-y-auto md:space-y-4 md:max-h-[50vh]">
                 {cart.lines.map((line, index) => (
-                  <div key={index} className="space-y-3 p-3 md:p-4 rounded-lg border">
-                    <div className="flex justify-between items-start gap-3">
+                  <div key={index} className="space-y-2 p-3 rounded-lg border md:space-y-3 md:p-4">
+                    <div className="flex justify-between items-start">
                       <div className="flex-1 min-w-0">
                         <h4 className="font-medium leading-tight text-sm md:text-base">{line.name}</h4>
 
                         {line.type === "meal" && (
                           <div className="mt-2 space-y-2">
                             <div className="flex justify-between items-center py-1 px-2 bg-muted/20 rounded">
-                              <span className="text-xs md:text-sm text-muted-foreground">Base meal</span>
-                              <span className="text-xs md:text-sm font-medium">
+                              <span className="text-xs text-muted-foreground md:text-sm">Base meal</span>
+                              <span className="text-xs font-medium md:text-sm">
                                 {formatCurrency(
                                   ((line.unitPrice || 0) -
                                     line.extraIds.reduce((sum, id) => sum + (mealPrices[id] || 0), 0)) *
@@ -188,7 +188,7 @@ export function StickyCartBar() {
                             </div>
 
                             {line.sideIds.length > 0 && (
-                              <p className="text-xs md:text-sm text-muted-foreground">
+                              <p className="text-xs text-muted-foreground md:text-sm">
                                 Sides: {line.sideIds.map((id) => mealNames[id] || id).join(", ")}
                               </p>
                             )}
@@ -199,7 +199,7 @@ export function StickyCartBar() {
                                     key={id}
                                     className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-lg"
                                   >
-                                    <span className="text-xs md:text-sm font-medium">+ {mealNames[id] || id}</span>
+                                    <span className="text-xs font-medium md:text-sm">+ {mealNames[id] || id}</span>
                                     <span className="text-primary font-semibold text-xs md:text-sm">
                                       {formatCurrency((mealPrices[id] || 0) * line.quantity)}
                                     </span>
@@ -208,7 +208,7 @@ export function StickyCartBar() {
                               </div>
                             )}
                             {line.preferences && Object.keys(line.preferences).length > 0 && (
-                              <p className="text-xs md:text-sm text-muted-foreground">
+                              <p className="text-xs text-muted-foreground md:text-sm">
                                 {Object.entries(line.preferences)
                                   .map(([key, value]) => `${key.replace(/_/g, " ")}: ${value}`)
                                   .join(", ")}
@@ -218,14 +218,14 @@ export function StickyCartBar() {
                         )}
 
                         {line.type === "drink" && (
-                          <p className="text-xs md:text-sm text-muted-foreground capitalize mt-1">{line.variant}</p>
+                          <p className="text-xs text-muted-foreground capitalize mt-1 md:text-sm">{line.variant}</p>
                         )}
                       </div>
-                      <div className="ml-3 text-right flex-shrink-0">
+                      <div className="ml-4 text-right">
                         <p className="font-semibold text-sm md:text-base">
                           {formatCurrency((line.unitPrice ?? 0) * line.quantity)}
                         </p>
-                        <p className="text-xs md:text-sm text-muted-foreground">
+                        <p className="text-xs text-muted-foreground md:text-sm">
                           {formatCurrency(line.unitPrice ?? 0)} each
                         </p>
                       </div>
@@ -236,7 +236,7 @@ export function StickyCartBar() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-10 w-10 md:h-8 md:w-8 bg-transparent"
+                          className="h-10 w-10 bg-transparent min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
                           onClick={() => decrementLineQuantity(index)}
                           disabled={line.quantity <= 1}
                         >
@@ -246,7 +246,7 @@ export function StickyCartBar() {
                         <Button
                           variant="outline"
                           size="icon"
-                          className="h-10 w-10 md:h-8 md:w-8 bg-transparent"
+                          className="h-10 w-10 bg-transparent min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
                           onClick={() => incrementLineQuantity(index)}
                         >
                           <Plus className="w-4 h-4" />
@@ -255,11 +255,11 @@ export function StickyCartBar() {
                       <Button
                         variant="ghost"
                         size="sm"
-                        className="text-destructive hover:text-destructive min-h-[40px] md:min-h-[32px]"
+                        className="text-destructive hover:text-destructive min-h-[44px] px-3 md:min-h-[32px]"
                         onClick={() => removeLine(index)}
                       >
                         <Trash2 className="w-4 h-4 mr-1" />
-                        Remove
+                        <span className="text-xs md:text-sm">Remove</span>
                       </Button>
                     </div>
                   </div>
@@ -268,14 +268,14 @@ export function StickyCartBar() {
 
               <Separator />
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-lg md:text-xl">
+              <div className="space-y-3 md:space-y-4">
+                <div className="flex justify-between items-center text-base md:text-lg">
                   <span className="font-semibold">Total</span>
                   <span className="font-bold">{formatCurrency(total ?? 0)}</span>
                 </div>
 
                 <Button
-                  className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[52px] md:min-h-[44px]"
+                  className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[44px]"
                   size="lg"
                   disabled={!cart.table_number || isPlacingOrder}
                   onClick={placeOrder}

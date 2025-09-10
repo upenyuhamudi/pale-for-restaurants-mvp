@@ -105,14 +105,14 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
     <>
       <Card
         className={cn(
-          "group cursor-pointer transition-all duration-300 hover:shadow-md hover:shadow-primary/10 bg-card border border-border/50 rounded-lg overflow-hidden",
+          "group cursor-pointer transition-all duration-300 hover:shadow-md hover:shadow-primary/10 bg-card border border-border/50 rounded-xl overflow-hidden",
           isSoldOut && "opacity-60 cursor-not-allowed",
         )}
         onClick={handleCardClick}
       >
         <CardContent className="p-0">
-          <div className="flex items-center gap-3 md:gap-4 p-4 md:p-3">
-            <div className="relative flex-shrink-0 w-20 h-20 md:w-16 md:h-16 rounded-lg overflow-hidden bg-muted/30">
+          <div className="flex items-center gap-4 p-4 md:gap-4 md:p-4">
+            <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-muted/30 md:w-24 md:h-24">
               {item.image_url ? (
                 <img
                   src={convertGoogleDriveUrl(item.image_url) || "/placeholder.svg"}
@@ -122,7 +122,7 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground/60">
-                  <span className="text-xl md:text-lg">{type === "meal" ? "🍽️" : "🥤"}</span>
+                  <span className="text-2xl md:text-3xl">{type === "meal" ? "🍽️" : "🥤"}</span>
                 </div>
               )}
 
@@ -136,27 +136,27 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-base md:text-sm leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+              <h3 className="font-semibold text-base leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors md:text-lg md:line-clamp-1">
                 {item.name}
               </h3>
 
               {item.description && (
-                <p className="text-sm md:text-xs text-muted-foreground line-clamp-2 md:line-clamp-1 mt-1">
+                <p className="text-sm text-muted-foreground line-clamp-2 mt-2 leading-relaxed md:text-base md:line-clamp-1 md:mt-1">
                   {item.description}
                 </p>
               )}
 
-              <div className="flex items-center justify-between mt-3 md:mt-2">
-                <span className="text-primary font-semibold text-base md:text-sm">{getDisplayPrice()}</span>
+              <div className="flex items-center justify-between mt-3 md:mt-4">
+                <span className="text-primary font-bold text-lg md:text-xl">{getDisplayPrice()}</span>
 
                 {!isSoldOut && (
                   <Button
                     size="sm"
-                    className="h-9 w-9 md:h-7 md:w-7 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm relative z-10"
+                    className="h-11 w-11 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md relative z-10 rounded-xl md:h-10 md:w-10"
                     onClick={handleQuickAdd}
                     style={{ pointerEvents: "auto" }}
                   >
-                    <Plus className="h-4 w-4 md:h-3 md:w-3" />
+                    <Plus className="h-5 w-5 md:h-4 md:w-4" />
                   </Button>
                 )}
               </div>

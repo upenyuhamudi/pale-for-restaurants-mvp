@@ -300,9 +300,9 @@ export function MealDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-lg md:max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto mx-4 md:mx-auto">
-        <DialogHeader className="pb-3 md:pb-4">
-          <DialogTitle className="text-lg md:text-xl font-semibold pr-8">{meal.name}</DialogTitle>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto mx-auto md:w-full">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold md:text-xl">{meal.name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 md:space-y-6">
@@ -318,7 +318,7 @@ export function MealDetailModal({
           )}
 
           {meal.description && (
-            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{meal.description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed md:text-base">{meal.description}</p>
           )}
 
           {meal.allergens && meal.allergens.length > 0 && (
@@ -340,18 +340,18 @@ export function MealDetailModal({
             <div>
               <h4 className="font-medium mb-3 text-sm md:text-base">
                 Choose Sides
-                <span className="text-xs md:text-sm text-muted-foreground ml-2">
+                <span className="text-xs text-muted-foreground ml-2 md:text-sm">
                   ({selectedSides.length}/{meal.allowed_sides || 2} selected)
                 </span>
               </h4>
               {loadingSides ? (
                 <p className="text-sm text-muted-foreground">Loading sides...</p>
               ) : (
-                <div className="grid grid-cols-1 gap-2 md:gap-3">
+                <div className="grid grid-cols-1 gap-2">
                   {sideMeals.map((sideMeal) => (
                     <label
                       key={sideMeal.id}
-                      className="flex items-center justify-between space-x-3 p-3 md:p-4 rounded-lg border cursor-pointer hover:bg-muted/50 min-h-[48px] md:min-h-[52px]"
+                      className="flex items-center justify-between space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 min-h-[44px] md:min-h-auto"
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -366,7 +366,7 @@ export function MealDetailModal({
                               setSelectedSides(selectedSides.filter((s) => s !== sideMeal.id))
                             }
                           }}
-                          className="rounded w-4 h-4 md:w-5 md:h-5"
+                          className="rounded w-4 h-4"
                           disabled={
                             !selectedSides.includes(sideMeal.id) && selectedSides.length >= (meal.allowed_sides || 2)
                           }
@@ -381,7 +381,7 @@ export function MealDetailModal({
                 </div>
               )}
               {selectedSides.length >= (meal.allowed_sides || 2) && (
-                <p className="text-xs md:text-sm text-muted-foreground mt-2">Maximum sides selected</p>
+                <p className="text-xs text-muted-foreground mt-2 md:text-sm">Maximum sides selected</p>
               )}
             </div>
           )}
@@ -390,18 +390,18 @@ export function MealDetailModal({
             <div>
               <h4 className="font-medium mb-3 text-sm md:text-base">
                 Add Extras
-                <span className="text-xs md:text-sm text-muted-foreground ml-2">
+                <span className="text-xs text-muted-foreground ml-2 md:text-sm">
                   ({selectedExtras.length} selected)
                 </span>
               </h4>
               {loadingExtras ? (
                 <p className="text-sm text-muted-foreground">Loading extras...</p>
               ) : (
-                <div className="grid grid-cols-1 gap-2 md:gap-3">
+                <div className="grid grid-cols-1 gap-2">
                   {extraMeals.map((extraMeal) => (
                     <label
                       key={extraMeal.id}
-                      className="flex items-center justify-between space-x-3 p-3 md:p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors min-h-[48px] md:min-h-[52px]"
+                      className="flex items-center justify-between space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors min-h-[44px] md:min-h-auto"
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -416,7 +416,7 @@ export function MealDetailModal({
                               setSelectedExtras(selectedExtras.filter((e) => e !== extraMeal.id))
                             }
                           }}
-                          className="rounded border-2 border-gray-300 text-brand-orange focus:ring-brand-orange focus:ring-2 w-4 h-4 md:w-5 md:h-5"
+                          className="rounded border-2 border-gray-300 text-brand-orange focus:ring-brand-orange focus:ring-2 w-4 h-4"
                           disabled={
                             !selectedExtras.includes(extraMeal.id) &&
                             selectedExtras.length >= (meal.allowed_extras || 0)
@@ -432,7 +432,7 @@ export function MealDetailModal({
                 </div>
               )}
               {selectedExtras.length >= (meal.allowed_extras || 0) && (
-                <p className="text-xs md:text-sm text-muted-foreground mt-2">Maximum extras selected</p>
+                <p className="text-xs text-muted-foreground mt-2 md:text-sm">Maximum extras selected</p>
               )}
             </div>
           )}
@@ -454,7 +454,7 @@ export function MealDetailModal({
                   return (
                     <div
                       key={pref}
-                      className={isDoneness ? "p-3 md:p-4 border-2 border-orange-200 rounded-lg bg-orange-50" : ""}
+                      className={isDoneness ? "p-3 border-2 border-orange-200 rounded-lg bg-orange-50" : ""}
                     >
                       <label
                         className={`block text-sm font-medium mb-2 capitalize ${isDoneness ? "text-orange-700 font-semibold" : ""}`}
@@ -470,7 +470,7 @@ export function MealDetailModal({
                         }}
                       >
                         <SelectTrigger
-                          className={`min-h-[48px] md:min-h-[44px] ${isDoneness ? "border-orange-300 focus:border-orange-500" : ""}`}
+                          className={`min-h-[44px] ${isDoneness ? "border-orange-300 focus:border-orange-500" : ""}`}
                         >
                           <SelectValue placeholder={`Select ${pref.replace(/_/g, " ")}`} />
                         </SelectTrigger>
@@ -499,7 +499,7 @@ export function MealDetailModal({
                 size="icon"
                 onClick={() => handleQuantityChange(-1)}
                 disabled={quantity <= 1}
-                className="h-10 w-10 md:h-9 md:w-9"
+                className="h-10 w-10 min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
               >
                 <Minus className="w-4 h-4" />
               </Button>
@@ -508,21 +508,21 @@ export function MealDetailModal({
                 variant="outline"
                 size="icon"
                 onClick={() => handleQuantityChange(1)}
-                className="h-10 w-10 md:h-9 md:w-9"
+                className="h-10 w-10 min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
               >
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
           </div>
 
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-4 border-t">
-            <div className="text-lg md:text-xl font-semibold order-2 md:order-1 text-center md:text-left">
+          <div className="flex flex-col gap-3 pt-4 border-t md:flex-row md:items-center md:justify-between">
+            <div className="text-lg font-semibold order-2 text-center md:order-1 md:text-left md:text-xl">
               Total: {formatCurrency(totalPrice)}
             </div>
             <Button
               onClick={handleAddToCart}
               disabled={isAddDisabled}
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 md:px-8 disabled:opacity-50 min-h-[48px] md:min-h-[44px] order-1 md:order-2"
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 disabled:opacity-50 min-h-[44px] order-1 md:order-2 md:px-8"
               size="lg"
             >
               Add to Cart

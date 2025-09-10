@@ -263,13 +263,13 @@ export function PairingSuggestionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-sm md:max-w-md mx-4 md:mx-auto">
-        <DialogHeader className="pb-3 md:pb-4">
-          <DialogTitle className="text-center text-xl md:text-2xl font-bold">Perfect Pairings</DialogTitle>
+      <DialogContent className="max-w-md mx-auto">
+        <DialogHeader>
+          <DialogTitle className="text-center text-2xl font-bold">Perfect Pairings</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4">
-          <p className="text-sm text-muted-foreground text-center">
+          <p className="text-sm text-muted-foreground">
             Great choice! Here are some perfect pairings with your {addedItem?.name}:
           </p>
 
@@ -277,7 +277,7 @@ export function PairingSuggestionModal({
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-muted h-16 md:h-20 rounded-lg"></div>
+                  <div className="bg-muted h-20 rounded-lg"></div>
                 </div>
               ))}
             </div>
@@ -292,9 +292,9 @@ export function PairingSuggestionModal({
                     key={suggestion.id}
                     className={`overflow-hidden transition-colors ${isAdded ? "bg-green-50 border-green-200" : ""}`}
                   >
-                    <CardContent className="p-3 md:p-4">
+                    <CardContent className="p-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-14 h-14 md:w-12 md:h-12 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                        <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden flex-shrink-0">
                           {suggestion.image_url ? (
                             <img
                               src={suggestion.image_url || "/placeholder.svg"}
@@ -307,7 +307,7 @@ export function PairingSuggestionModal({
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm md:text-base truncate">{suggestion.name}</h4>
+                          <h4 className="font-medium text-sm truncate">{suggestion.name}</h4>
                           <p className="text-xs text-muted-foreground line-clamp-1">{suggestion.description}</p>
                           <p className="text-sm font-semibold text-primary">{getSuggestionPrice(suggestion)}</p>
                           {requiresCustomization && <p className="text-xs text-muted-foreground">Tap to customize</p>}
@@ -318,7 +318,7 @@ export function PairingSuggestionModal({
                             size="sm"
                             variant="outline"
                             disabled
-                            className="bg-green-100 border-green-300 text-green-700 flex-shrink-0 h-10 w-10 md:h-8 md:w-8 p-0"
+                            className="bg-green-100 border-green-300 text-green-700 flex-shrink-0"
                           >
                             <Check className="h-4 w-4" />
                           </Button>
@@ -326,7 +326,7 @@ export function PairingSuggestionModal({
                           <Button
                             size="sm"
                             onClick={() => handleAddSuggestion(suggestion)}
-                            className="bg-brand-orange hover:bg-brand-orange/90 text-white flex-shrink-0 h-10 w-10 md:h-8 md:w-8 p-0"
+                            className="bg-brand-orange hover:bg-brand-orange/90 text-white flex-shrink-0"
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
@@ -338,19 +338,16 @@ export function PairingSuggestionModal({
               })}
             </div>
           ) : (
-            <div className="text-center py-6 md:py-8">
+            <div className="text-center py-8">
               <p className="text-sm text-muted-foreground">No pairings available at the moment.</p>
             </div>
           )}
 
           <div className="flex gap-2 pt-2">
-            <Button variant="outline" onClick={onClose} className="flex-1 bg-transparent min-h-[48px] md:min-h-[44px]">
+            <Button variant="outline" onClick={onClose} className="flex-1 bg-transparent">
               No Thanks
             </Button>
-            <Button
-              onClick={onClose}
-              className="flex-1 bg-brand-purple hover:bg-brand-purple/90 min-h-[48px] md:min-h-[44px]"
-            >
+            <Button onClick={onClose} className="flex-1 bg-brand-purple hover:bg-brand-purple/90">
               Continue
             </Button>
           </div>

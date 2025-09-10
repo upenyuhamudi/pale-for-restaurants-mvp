@@ -40,21 +40,21 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md mx-4 md:mx-auto" hideClose>
-        <DialogHeader className="text-center pb-2">
-          <DialogTitle className="text-xl font-semibold">Welcome!</DialogTitle>
-          <DialogDescription className="text-base">
+      <DialogContent className="w-[95vw] max-w-md mx-auto rounded-2xl md:w-full md:rounded-xl" hideClose>
+        <DialogHeader className="text-center">
+          <DialogTitle className="text-xl font-bold md:text-2xl">Welcome!</DialogTitle>
+          <DialogDescription className="text-base leading-relaxed md:text-lg">
             Please enter your table number to get started with your order.
             <br />
-            <span className="text-sm text-muted-foreground mt-1 block">
+            <span className="text-sm text-muted-foreground mt-2 block md:text-base">
               Your table number helps us deliver your order to the right location.
             </span>
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-6 py-4 md:space-y-8 md:py-6">
           <div className="text-center">
-            <label htmlFor="name-input" className="block text-sm font-medium text-muted-foreground mb-2">
+            <label htmlFor="name-input" className="block text-base font-medium text-muted-foreground mb-3">
               Your Name
             </label>
             <Input
@@ -62,13 +62,13 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
               value={dinerName}
               onChange={(e) => setDinerName(e.target.value)}
               placeholder="Enter your name"
-              className="text-center text-base md:text-lg font-medium h-12 md:h-14"
+              className="text-center text-lg font-medium h-14 min-h-[48px] rounded-xl md:text-xl md:h-16"
               autoFocus
             />
           </div>
 
           <div className="text-center">
-            <label htmlFor="table-input" className="block text-sm font-medium text-muted-foreground mb-2">
+            <label htmlFor="table-input" className="block text-base font-medium text-muted-foreground mb-3">
               Table Number
             </label>
             <Input
@@ -79,16 +79,16 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
                 setTableNumber(value)
               }}
               placeholder="Enter table number"
-              className="text-center text-xl md:text-2xl font-semibold h-14 md:h-16 text-primary"
+              className="text-center text-2xl font-bold h-16 text-primary min-h-[48px] rounded-xl md:text-3xl md:h-20"
               maxLength={3}
             />
           </div>
 
-          <div className="flex flex-col md:flex-row gap-3 pt-4">
+          <div className="flex flex-col gap-4 pt-4 md:flex-row md:pt-6">
             <Button
               variant="outline"
               onClick={handleCancel}
-              className="flex-1 bg-transparent min-h-[48px] md:min-h-[44px]"
+              className="flex-1 bg-transparent min-h-[48px] text-base font-medium rounded-xl order-2 md:order-1"
               size="lg"
               disabled={isLoading}
             >
@@ -97,12 +97,12 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
             <Button
               onClick={handleConfirm}
               disabled={!dinerName.trim() || !tableNumber.trim() || isLoading}
-              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[48px] md:min-h-[44px]"
+              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[48px] text-base font-semibold rounded-xl order-1 md:order-2"
               size="lg"
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                   Setting up...
                 </>
               ) : (

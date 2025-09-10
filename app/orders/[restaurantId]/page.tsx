@@ -261,8 +261,8 @@ export default function OrdersPage() {
     const Icon = config.icon
 
     return (
-      <Badge variant={config.variant} className="flex items-center gap-1 text-xs md:text-sm">
-        <Icon className="w-3 h-3 md:w-4 md:h-4" />
+      <Badge variant={config.variant} className="flex items-center gap-1">
+        <Icon className="w-3 h-3" />
         {config.label}
       </Badge>
     )
@@ -270,22 +270,20 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-6 md:py-8 max-w-4xl pb-24 md:pb-8">
-        <div className="mb-6 md:mb-8">
+      <div className="container mx-auto px-4 py-8 max-w-4xl pb-24 md:pb-8">
+        <div className="mb-8">
           <Link
             href={`/r/${restaurantId}`}
-            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 md:hidden min-h-[44px]"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 md:hidden"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Menu
           </Link>
 
           {(!hasSearched || orders.length === 0) && (
-            <div className="text-center mb-6 md:mb-8">
-              <h1 className="text-xl md:text-2xl font-bold mb-2">Track Your Orders</h1>
-              <p className="text-sm md:text-base text-muted-foreground mb-6">
-                Enter your name and table number to view your order status
-              </p>
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold mb-2">Track Your Orders</h1>
+              <p className="text-muted-foreground mb-6">Enter your name and table number to view your order status</p>
 
               {error && (
                 <Card className="max-w-md mx-auto mb-4 border-destructive">
@@ -297,7 +295,7 @@ export default function OrdersPage() {
 
               <Card className="max-w-md mx-auto">
                 <CardContent className="pt-6">
-                  <div className="space-y-4 md:space-y-6">
+                  <div className="space-y-4">
                     <div>
                       <label htmlFor="name" className="block text-sm font-medium mb-2">
                         Your Name
@@ -307,7 +305,7 @@ export default function OrdersPage() {
                         value={dinerName}
                         onChange={(e) => setDinerName(e.target.value)}
                         placeholder="Enter your name"
-                        className="text-center h-12 md:h-10 text-base md:text-sm"
+                        className="text-center"
                       />
                     </div>
 
@@ -323,7 +321,7 @@ export default function OrdersPage() {
                           setTableNumber(value)
                         }}
                         placeholder="Enter table number"
-                        className="text-center text-lg md:text-base font-semibold h-12 md:h-10"
+                        className="text-center text-lg font-semibold"
                         maxLength={3}
                       />
                     </div>
@@ -331,7 +329,7 @@ export default function OrdersPage() {
                     <Button
                       onClick={handleSearch}
                       disabled={!dinerName.trim() || !tableNumber.trim() || isLoading}
-                      className="w-full min-h-[48px] md:min-h-[40px]"
+                      className="w-full"
                       size="lg"
                     >
                       {isLoading ? (
@@ -350,18 +348,12 @@ export default function OrdersPage() {
           )}
 
           {hasSearched && (
-            <div className="space-y-4 md:space-y-6">
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-                <CardTitle className="text-lg md:text-xl font-semibold">
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <CardTitle className="text-xl font-semibold">
                   Orders for {dinerName} - Table {tableNumber}
                 </CardTitle>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleRefresh}
-                  disabled={isLoading}
-                  className="min-h-[40px] md:min-h-[36px] w-full sm:w-auto bg-transparent"
-                >
+                <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
                   Refresh
                 </Button>
@@ -369,19 +361,15 @@ export default function OrdersPage() {
 
               {orders.length > 0 && (
                 <div className="space-y-3 mb-6">
-                  <Button onClick={handleBrowseMenu} className="w-full min-h-[48px] md:min-h-[44px]" size="lg">
+                  <Button onClick={handleBrowseMenu} className="w-full" size="lg">
                     <Utensils className="w-4 h-4 mr-2" />
                     Browse Menu & Add Items
                   </Button>
-                  <div className="flex flex-col sm:flex-row gap-2">
+                  <div className="flex gap-2">
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`flex-1 min-h-[44px] md:min-h-[36px] ${
-                        orders.some((order) => order.bill_requested)
-                          ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                          : "bg-transparent"
-                      }`}
+                      className={`flex-1 ${orders.some((order) => order.bill_requested) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"}`}
                       onClick={handleBillRequest}
                       disabled={isBillRequesting || orders.some((order) => order.bill_requested)}
                     >
@@ -395,11 +383,7 @@ export default function OrdersPage() {
                     <Button
                       variant="outline"
                       size="sm"
-                      className={`flex-1 min-h-[44px] md:min-h-[36px] ${
-                        orders.some((order) => order.waiter_called)
-                          ? "bg-gray-100 text-gray-500 cursor-not-allowed"
-                          : "bg-transparent"
-                      }`}
+                      className={`flex-1 ${orders.some((order) => order.waiter_called) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"}`}
                       onClick={handleWaiterCall}
                       disabled={isWaiterCalling || orders.some((order) => order.waiter_called)}
                     >
@@ -417,7 +401,7 @@ export default function OrdersPage() {
               {orders.length === 0 ? (
                 <Card>
                   <CardContent className="text-center py-8">
-                    <p className="text-muted-foreground text-sm md:text-base">
+                    <p className="text-muted-foreground">
                       No orders found for {dinerName} at Table {tableNumber}
                     </p>
                   </CardContent>
@@ -425,45 +409,39 @@ export default function OrdersPage() {
               ) : (
                 orders.map((order) => (
                   <Card key={order.id}>
-                    <CardHeader className="pb-3 md:pb-6">
-                      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
-                        <CardTitle className="text-base md:text-lg">
-                          Order #{order.id.slice(-8).toUpperCase()}
-                        </CardTitle>
+                    <CardHeader>
+                      <div className="flex items-center justify-between">
+                        <CardTitle className="text-lg">Order #{order.id.slice(-8).toUpperCase()}</CardTitle>
                         {getStatusBadge(order.status)}
                       </div>
-                      <p className="text-xs md:text-sm text-muted-foreground">
-                        {new Date(order.created_at).toLocaleString()}
-                      </p>
+                      <p className="text-sm text-muted-foreground">{new Date(order.created_at).toLocaleString()}</p>
                     </CardHeader>
                     <CardContent>
-                      <div className="space-y-3 md:space-y-4">
+                      <div className="space-y-4">
                         {order.order_items.map((item) => (
-                          <div key={item.id} className="flex justify-between items-start gap-3">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-1">
-                                <span className="font-medium text-sm md:text-base">{item.item_name}</span>
-                                <div className="flex items-center gap-2">
-                                  {item.variant && (
-                                    <Badge variant="outline" className="text-xs">
-                                      {item.variant}
-                                    </Badge>
-                                  )}
-                                  <span className="text-xs md:text-sm text-muted-foreground">× {item.quantity}</span>
-                                </div>
+                          <div key={item.id} className="flex justify-between items-start">
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="font-medium">{item.item_name}</span>
+                                {item.variant && (
+                                  <Badge variant="outline" className="text-xs">
+                                    {item.variant}
+                                  </Badge>
+                                )}
+                                <span className="text-sm text-muted-foreground">× {item.quantity}</span>
                               </div>
                               {item.side_ids && item.side_ids.length > 0 && (
-                                <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                                <p className="text-sm text-muted-foreground">
                                   Sides: {resolveSideNames(item.side_ids)}
                                 </p>
                               )}
                               {item.extra_ids && item.extra_ids.length > 0 && (
-                                <p className="text-xs md:text-sm text-muted-foreground mb-1">
+                                <p className="text-sm text-muted-foreground">
                                   Extras: {resolveExtraNames(item.extra_ids)}
                                 </p>
                               )}
                               {item.preferences && Object.keys(item.preferences).length > 0 && (
-                                <p className="text-xs md:text-sm text-muted-foreground">
+                                <p className="text-sm text-muted-foreground">
                                   Preferences:{" "}
                                   {Object.entries(item.preferences)
                                     .map(([key, value]) => `${key}: ${value}`)
@@ -471,15 +449,15 @@ export default function OrdersPage() {
                                 </p>
                               )}
                             </div>
-                            <div className="text-right flex-shrink-0">
-                              <p className="font-medium text-sm md:text-base">R{item.total_price.toFixed(2)}</p>
+                            <div className="text-right">
+                              <p className="font-medium">R{item.total_price.toFixed(2)}</p>
                               <p className="text-xs text-muted-foreground">R{item.unit_price.toFixed(2)} each</p>
                             </div>
                           </div>
                         ))}
 
-                        <div className="border-t pt-3 md:pt-4">
-                          <div className="flex justify-between items-center font-semibold text-base md:text-lg">
+                        <div className="border-t pt-4">
+                          <div className="flex justify-between items-center font-semibold text-lg">
                             <span>Total</span>
                             <span>R{order.total.toFixed(2)}</span>
                           </div>

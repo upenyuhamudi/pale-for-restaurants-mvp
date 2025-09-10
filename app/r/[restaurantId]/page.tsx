@@ -12,10 +12,10 @@ interface RestaurantPageProps {
 
 function RestaurantLoading() {
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="flex flex-col items-center gap-4">
-        <Loader2 className="w-8 h-8 animate-spin text-brand-orange" />
-        <p className="text-muted-foreground">Loading restaurant menu...</p>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <div className="flex flex-col items-center gap-3 md:gap-4">
+        <Loader2 className="w-6 h-6 animate-spin text-brand-orange md:w-8 md:h-8" />
+        <p className="text-sm text-muted-foreground text-center md:text-base">Loading restaurant menu...</p>
       </div>
     </div>
   )

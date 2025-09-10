@@ -25,7 +25,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={manrope.variable}>
       <body className="font-sans antialiased">
-        <AppProviders>{children}</AppProviders>
+        <div className="min-h-screen bg-background">
+          <AppProviders>{children}</AppProviders>
+        </div>
       </body>
     </html>
   )

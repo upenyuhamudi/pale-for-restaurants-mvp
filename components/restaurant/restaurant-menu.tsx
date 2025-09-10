@@ -320,15 +320,15 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
           maxPrice={maxPrice}
         />
 
-        <main className="flex-1 pb-20 md:pb-0">
-          <div className="px-3 md:px-4 lg:px-6 xl:px-8">
-            <div className="flex gap-4 md:gap-6 lg:gap-8">
+        <main className="flex-1 pb-24 md:pb-0">
+          <div className="px-3 md:px-6 lg:px-8">
+            <div className="flex gap-4 lg:gap-6 xl:gap-8">
               <div className="flex-1 min-w-0">
                 <MenuTabs meals={filteredMeals} drinks={filteredDrinks} categories={categories} />
               </div>
 
-              <div className="hidden lg:block w-80 xl:w-96">
-                <div className="sticky top-20 md:top-24">
+              <div className="hidden lg:block w-72 xl:w-80 2xl:w-96">
+                <div className="sticky top-24">
                   <CartSidebar />
                 </div>
               </div>

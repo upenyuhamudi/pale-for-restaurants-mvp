@@ -162,16 +162,16 @@ export function DrinkDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-lg md:max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto mx-4 md:mx-auto">
-        <DialogHeader className="pb-3 md:pb-4">
-          <DialogTitle className="text-lg md:text-xl font-semibold pr-8">{drink.name}</DialogTitle>
+      <DialogContent className="w-[95vw] max-w-2xl max-h-[95vh] overflow-y-auto mx-auto md:w-full">
+        <DialogHeader>
+          <DialogTitle className="text-lg font-semibold md:text-xl">{drink.name}</DialogTitle>
         </DialogHeader>
 
         <div className="space-y-4 md:space-y-6">
           {/* Image */}
           {drink.image_url && (
             <div
-              className="w-full relative overflow-hidden rounded-lg md:rounded-xl bg-gray-50 flex items-center justify-center"
+              className="w-full relative overflow-hidden rounded-lg bg-gray-50 flex items-center justify-center md:rounded-xl"
               style={{ aspectRatio: "1/1", maxHeight: "250px" }}
             >
               <img
@@ -185,14 +185,14 @@ export function DrinkDetailModal({
 
           {/* Description */}
           {drink.description && (
-            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{drink.description}</p>
+            <p className="text-sm text-muted-foreground leading-relaxed md:text-base">{drink.description}</p>
           )}
 
           {/* Tasting Notes */}
           {drink.tasting_notes && drink.tasting_notes.length > 0 && (
             <div>
               <h4 className="font-medium mb-2 text-sm md:text-base">Tasting Notes</h4>
-              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed break-words">
+              <p className="text-xs text-muted-foreground leading-relaxed break-words md:text-sm">
                 {drink.tasting_notes.join(", ")}
               </p>
             </div>
@@ -204,13 +204,13 @@ export function DrinkDetailModal({
           {availableVariants.length > 0 && (
             <div>
               <h4 className="font-medium mb-3 text-sm md:text-base">Choose Serving Size *</h4>
-              <div className="grid grid-cols-1 gap-3">
+              <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                 {availableVariants.map((variant) => (
                   <button
                     key={variant}
                     onClick={() => handleVariantClick(variant)}
                     className={cn(
-                      "flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200 w-full min-h-[56px] md:min-h-[52px]",
+                      "flex flex-col items-center p-4 rounded-md border-2 transition-all duration-200 w-full min-h-[60px]",
                       "hover:border-brand-orange/50 focus:outline-none focus:ring-2 focus:ring-brand-orange/20",
                       selectedVariant === variant
                         ? "border-brand-orange bg-brand-orange text-white"
@@ -219,10 +219,7 @@ export function DrinkDetailModal({
                   >
                     <span className="capitalize font-medium text-sm md:text-base">{variant}</span>
                     <span
-                      className={cn(
-                        "text-sm md:text-base font-semibold",
-                        selectedVariant === variant ? "opacity-90" : "opacity-60",
-                      )}
+                      className={cn("text-xs md:text-sm", selectedVariant === variant ? "opacity-90" : "opacity-60")}
                     >
                       {formatCurrency(drink.pricing[variant])}
                     </span>
@@ -243,7 +240,7 @@ export function DrinkDetailModal({
                 size="icon"
                 onClick={() => handleQuantityChange(-1)}
                 disabled={quantity <= 1}
-                className="h-10 w-10 md:h-9 md:w-9"
+                className="h-10 w-10 min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
               >
                 <Minus className="w-4 h-4" />
               </Button>
@@ -252,7 +249,7 @@ export function DrinkDetailModal({
                 variant="outline"
                 size="icon"
                 onClick={() => handleQuantityChange(1)}
-                className="h-10 w-10 md:h-9 md:w-9"
+                className="h-10 w-10 min-h-[44px] min-w-[44px] md:h-8 md:w-8 md:min-h-[32px] md:min-w-[32px]"
               >
                 <Plus className="w-4 h-4" />
               </Button>
@@ -260,8 +257,8 @@ export function DrinkDetailModal({
           </div>
 
           {/* Footer */}
-          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-4 border-t">
-            <div className="text-lg md:text-xl font-semibold order-2 md:order-1 text-center md:text-left">
+          <div className="flex flex-col gap-3 pt-4 border-t md:flex-row md:items-center md:justify-between">
+            <div className="text-lg font-semibold order-2 text-center md:order-1 md:text-left md:text-xl">
               Total: {formatCurrency(totalPrice)}
             </div>
             <Button
@@ -270,7 +267,7 @@ export function DrinkDetailModal({
                 handleAddToCart()
               }}
               disabled={isAddDisabled}
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 md:px-8 disabled:opacity-50 min-h-[48px] md:min-h-[44px] order-1 md:order-2"
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 disabled:opacity-50 min-h-[44px] order-1 md:order-2 md:px-8"
               size="lg"
               onMouseDown={() => console.log("[v0] Add to Cart button mouse down")}
               onMouseUp={() => console.log("[v0] Add to Cart button mouse up")}
