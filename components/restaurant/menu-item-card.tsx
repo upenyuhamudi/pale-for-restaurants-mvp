@@ -105,14 +105,14 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
     <>
       <Card
         className={cn(
-          "group cursor-pointer transition-all duration-300 hover:shadow-md hover:shadow-primary/10 bg-card border border-border/50 rounded-xl overflow-hidden",
+          "group cursor-pointer transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 bg-card border border-border/50 rounded-xl overflow-hidden active:scale-[0.98] md:active:scale-100",
           isSoldOut && "opacity-60 cursor-not-allowed",
         )}
         onClick={handleCardClick}
       >
         <CardContent className="p-0">
-          <div className="flex items-center gap-4 p-4 md:gap-4 md:p-4">
-            <div className="relative flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden bg-muted/30 md:w-24 md:h-24">
+          <div className="flex items-center gap-4 p-4 min-h-[100px] md:gap-4 md:p-4 md:min-h-[96px]">
+            <div className="relative flex-shrink-0 w-24 h-24 rounded-xl overflow-hidden bg-muted/30 md:w-20 md:h-20 lg:w-24 lg:h-24">
               {item.image_url ? (
                 <img
                   src={convertGoogleDriveUrl(item.image_url) || "/placeholder.svg"}
@@ -122,7 +122,7 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground/60">
-                  <span className="text-2xl md:text-3xl">{type === "meal" ? "🍽️" : "🥤"}</span>
+                  <span className="text-3xl md:text-2xl lg:text-3xl">{type === "meal" ? "🍽️" : "🥤"}</span>
                 </div>
               )}
 
@@ -136,27 +136,27 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
             </div>
 
             <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-base leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors md:text-lg md:line-clamp-1">
+              <h3 className="font-semibold text-lg leading-tight text-foreground line-clamp-2 group-hover:text-primary transition-colors md:text-base md:line-clamp-1 lg:text-lg lg:line-clamp-2">
                 {item.name}
               </h3>
 
               {item.description && (
-                <p className="text-sm text-muted-foreground line-clamp-2 mt-2 leading-relaxed md:text-base md:line-clamp-1 md:mt-1">
+                <p className="text-base text-muted-foreground line-clamp-2 mt-2 leading-relaxed md:text-sm md:line-clamp-1 md:mt-1 lg:text-base lg:line-clamp-2 lg:mt-2">
                   {item.description}
                 </p>
               )}
 
-              <div className="flex items-center justify-between mt-3 md:mt-4">
-                <span className="text-primary font-bold text-lg md:text-xl">{getDisplayPrice()}</span>
+              <div className="flex items-center justify-between mt-4 md:mt-3 lg:mt-4">
+                <span className="text-primary font-bold text-xl md:text-lg lg:text-xl">{getDisplayPrice()}</span>
 
                 {!isSoldOut && (
                   <Button
                     size="sm"
-                    className="h-11 w-11 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-md relative z-10 rounded-xl md:h-10 md:w-10"
+                    className="h-12 w-12 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg relative z-10 rounded-xl transition-all duration-200 hover:scale-105 active:scale-95 md:h-10 md:w-10 lg:h-12 lg:w-12"
                     onClick={handleQuickAdd}
                     style={{ pointerEvents: "auto" }}
                   >
-                    <Plus className="h-5 w-5 md:h-4 md:w-4" />
+                    <Plus className="h-6 w-6 md:h-4 md:w-4 lg:h-5 lg:w-5" />
                   </Button>
                 )}
               </div>

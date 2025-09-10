@@ -263,13 +263,13 @@ export function PairingSuggestionModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md mx-auto">
-        <DialogHeader>
-          <DialogTitle className="text-center text-2xl font-bold">Perfect Pairings</DialogTitle>
+      <DialogContent className="w-[95vw] max-w-md max-h-[90vh] overflow-y-auto mx-auto p-4 md:p-6">
+        <DialogHeader className="pb-2">
+          <DialogTitle className="text-center text-xl font-bold md:text-2xl">Perfect Pairings</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
-          <p className="text-sm text-muted-foreground">
+        <div className="space-y-4 md:space-y-6">
+          <p className="text-sm text-muted-foreground leading-relaxed md:text-base">
             Great choice! Here are some perfect pairings with your {addedItem?.name}:
           </p>
 
@@ -277,12 +277,12 @@ export function PairingSuggestionModal({
             <div className="space-y-3">
               {[1, 2, 3].map((i) => (
                 <div key={i} className="animate-pulse">
-                  <div className="bg-muted h-20 rounded-lg"></div>
+                  <div className="bg-muted h-24 rounded-lg md:h-20"></div>
                 </div>
               ))}
             </div>
           ) : suggestions.length > 0 ? (
-            <div className="space-y-3">
+            <div className="space-y-3 md:space-y-4">
               {suggestions.map((suggestion) => {
                 const isAdded = addedSuggestions.has(suggestion.id)
                 const requiresCustomization = needsCustomization(suggestion)
@@ -292,9 +292,9 @@ export function PairingSuggestionModal({
                     key={suggestion.id}
                     className={`overflow-hidden transition-colors ${isAdded ? "bg-green-50 border-green-200" : ""}`}
                   >
-                    <CardContent className="p-3">
-                      <div className="flex items-center gap-3">
-                        <div className="w-12 h-12 bg-muted rounded-lg overflow-hidden flex-shrink-0">
+                    <CardContent className="p-4 md:p-3">
+                      <div className="flex items-center gap-4 md:gap-3">
+                        <div className="w-16 h-16 bg-muted rounded-lg overflow-hidden flex-shrink-0 md:w-12 md:h-12">
                           {suggestion.image_url ? (
                             <img
                               src={suggestion.image_url || "/placeholder.svg"}
@@ -307,10 +307,16 @@ export function PairingSuggestionModal({
                         </div>
 
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-sm truncate">{suggestion.name}</h4>
-                          <p className="text-xs text-muted-foreground line-clamp-1">{suggestion.description}</p>
-                          <p className="text-sm font-semibold text-primary">{getSuggestionPrice(suggestion)}</p>
-                          {requiresCustomization && <p className="text-xs text-muted-foreground">Tap to customize</p>}
+                          <h4 className="font-medium text-base truncate md:text-sm">{suggestion.name}</h4>
+                          <p className="text-sm text-muted-foreground line-clamp-2 leading-relaxed md:text-xs md:line-clamp-1">
+                            {suggestion.description}
+                          </p>
+                          <p className="text-base font-semibold text-primary mt-1 md:text-sm">
+                            {getSuggestionPrice(suggestion)}
+                          </p>
+                          {requiresCustomization && (
+                            <p className="text-xs text-muted-foreground mt-1">Tap to customize</p>
+                          )}
                         </div>
 
                         {isAdded ? (
@@ -318,17 +324,17 @@ export function PairingSuggestionModal({
                             size="sm"
                             variant="outline"
                             disabled
-                            className="bg-green-100 border-green-300 text-green-700 flex-shrink-0"
+                            className="bg-green-100 border-green-300 text-green-700 flex-shrink-0 min-h-[44px] min-w-[44px] md:min-h-auto md:min-w-auto"
                           >
-                            <Check className="h-4 w-4" />
+                            <Check className="h-5 w-5 md:h-4 md:w-4" />
                           </Button>
                         ) : (
                           <Button
                             size="sm"
                             onClick={() => handleAddSuggestion(suggestion)}
-                            className="bg-brand-orange hover:bg-brand-orange/90 text-white flex-shrink-0"
+                            className="bg-brand-orange hover:bg-brand-orange/90 text-white flex-shrink-0 min-h-[44px] min-w-[44px] md:min-h-auto md:min-w-auto"
                           >
-                            <Plus className="h-4 w-4" />
+                            <Plus className="h-5 w-5 md:h-4 md:w-4" />
                           </Button>
                         )}
                       </div>
@@ -338,16 +344,23 @@ export function PairingSuggestionModal({
               })}
             </div>
           ) : (
-            <div className="text-center py-8">
-              <p className="text-sm text-muted-foreground">No pairings available at the moment.</p>
+            <div className="text-center py-8 md:py-6">
+              <p className="text-sm text-muted-foreground md:text-base">No pairings available at the moment.</p>
             </div>
           )}
 
-          <div className="flex gap-2 pt-2">
-            <Button variant="outline" onClick={onClose} className="flex-1 bg-transparent">
+          <div className="flex flex-col gap-3 pt-4 md:flex-row md:gap-2 md:pt-2">
+            <Button
+              variant="outline"
+              onClick={onClose}
+              className="flex-1 bg-transparent min-h-[44px] order-2 md:order-1 md:min-h-auto"
+            >
               No Thanks
             </Button>
-            <Button onClick={onClose} className="flex-1 bg-brand-purple hover:bg-brand-purple/90">
+            <Button
+              onClick={onClose}
+              className="flex-1 bg-brand-purple hover:bg-brand-purple/90 text-white min-h-[44px] order-1 md:order-2 md:min-h-auto"
+            >
               Continue
             </Button>
           </div>

@@ -157,14 +157,14 @@ export function CartSidebar() {
 
   if (itemCount === 0) {
     return (
-      <div className="bg-card rounded-lg border p-4 md:rounded-xl md:p-6">
-        <h3 className="font-semibold text-base mb-3 md:text-lg md:mb-4">Your Order</h3>
-        <div className="text-center py-6 md:py-8">
-          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center md:w-16 md:h-16 md:mb-4">
-            <span className="text-xl md:text-2xl">🛒</span>
+      <div className="bg-card rounded-xl border p-6 md:rounded-xl md:p-6">
+        <h3 className="font-bold text-lg mb-4 leading-tight md:text-lg md:mb-4">Your Order</h3>
+        <div className="text-center py-8 md:py-8">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center md:w-16 md:h-16 md:mb-4">
+            <span className="text-2xl md:text-2xl">🛒</span>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">Your cart is empty</p>
-          <p className="text-xs text-muted-foreground">Add items from the menu to get started</p>
+          <p className="text-muted-foreground text-base mb-2 leading-relaxed">Your cart is empty</p>
+          <p className="text-sm text-muted-foreground leading-relaxed">Add items from the menu to get started</p>
         </div>
       </div>
     )
@@ -172,35 +172,35 @@ export function CartSidebar() {
 
   return (
     <>
-      <div className="bg-card rounded-lg border p-4 md:rounded-xl md:p-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-base md:text-lg">Your Order</h3>
-          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
+      <div className="bg-card rounded-xl border p-6 md:rounded-xl md:p-6">
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-bold text-lg leading-tight md:text-lg">Your Order</h3>
+          <Badge variant="secondary" className="bg-primary/10 text-primary text-sm font-medium">
             {itemCount} item{itemCount !== 1 ? "s" : ""}
           </Badge>
         </div>
 
         {cart.table_number && (
-          <div className="mb-3 md:mb-4">
-            <p className="text-sm text-muted-foreground">Table {cart.table_number}</p>
-            {cart.diner_name && <p className="text-sm text-muted-foreground">{cart.diner_name}</p>}
+          <div className="mb-4 md:mb-4">
+            <p className="text-base text-muted-foreground leading-relaxed">Table {cart.table_number}</p>
+            {cart.diner_name && <p className="text-base text-muted-foreground leading-relaxed">{cart.diner_name}</p>}
           </div>
         )}
 
-        <div className="space-y-3 max-h-80 overflow-y-auto md:space-y-4 md:max-h-96">
+        <div className="space-y-4 max-h-80 overflow-y-auto md:space-y-4 md:max-h-96">
           {cart.lines.map((line, index) => (
-            <div key={index} className="space-y-2">
+            <div key={index} className="space-y-3">
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-tight">{line.name}</p>
+                  <p className="font-semibold text-base leading-tight">{line.name}</p>
 
                   {line.type === "meal" && (
-                    <div className="mt-1 space-y-1">
+                    <div className="mt-2 space-y-2">
                       {line.sideIds.length > 0 && (
-                        <div className="text-xs">
-                          <span className="text-muted-foreground">Sides: </span>
+                        <div className="text-sm">
+                          <span className="text-muted-foreground leading-relaxed">Sides: </span>
                           {line.sideIds.map((id, idx) => (
-                            <span key={id} className="text-muted-foreground">
+                            <span key={id} className="text-muted-foreground leading-relaxed">
                               {mealNames[id] || id}
                               {idx < line.sideIds.length - 1 ? ", " : ""}
                             </span>
@@ -208,11 +208,16 @@ export function CartSidebar() {
                         </div>
                       )}
                       {line.extraIds.length > 0 && (
-                        <div className="text-xs space-y-1">
+                        <div className="text-sm space-y-2">
                           {line.extraIds.map((id) => (
-                            <div key={id} className="flex justify-between items-center py-1 px-2 bg-muted/30 rounded">
-                              <span className="text-foreground font-medium">+ {mealNames[id] || id}</span>
-                              <span className="text-primary font-semibold">
+                            <div
+                              key={id}
+                              className="flex justify-between items-center py-2 px-3 bg-muted/30 rounded-lg"
+                            >
+                              <span className="text-foreground font-semibold leading-tight">
+                                + {mealNames[id] || id}
+                              </span>
+                              <span className="text-primary font-bold leading-tight">
                                 {formatCurrency((mealPrices[id] || 0) * line.quantity)}
                               </span>
                             </div>
@@ -220,7 +225,7 @@ export function CartSidebar() {
                         </div>
                       )}
                       {line.preferences && Object.keys(line.preferences).length > 0 && (
-                        <p className="text-xs text-muted-foreground">
+                        <p className="text-sm text-muted-foreground leading-relaxed">
                           {Object.entries(line.preferences)
                             .map(([key, value]) => `${key.replace(/_/g, " ")}: ${value}`)
                             .join(", ")}
@@ -230,25 +235,25 @@ export function CartSidebar() {
                   )}
 
                   {line.type === "drink" && (
-                    <p className="text-xs text-muted-foreground capitalize mt-1">{line.variant}</p>
+                    <p className="text-sm text-muted-foreground capitalize mt-2 leading-relaxed">{line.variant}</p>
                   )}
 
-                  <div className="flex items-center justify-between mt-2">
-                    <div className="flex items-center gap-2">
+                  <div className="flex items-center justify-between mt-3">
+                    <div className="flex items-center gap-3">
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 bg-transparent min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
+                        className="h-10 w-10 bg-transparent min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
                         onClick={() => decrementLineQuantity(index)}
                         disabled={line.quantity <= 1}
                       >
                         <Minus className="w-4 h-4 md:w-3 md:h-3" />
                       </Button>
-                      <span className="text-sm font-medium w-8 text-center">{line.quantity}</span>
+                      <span className="text-base font-bold w-8 text-center leading-tight">{line.quantity}</span>
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-8 w-8 bg-transparent min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
+                        className="h-10 w-10 bg-transparent min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
                         onClick={() => incrementLineQuantity(index)}
                       >
                         <Plus className="w-4 h-4 md:w-3 md:h-3" />
@@ -257,31 +262,33 @@ export function CartSidebar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
+                      className="h-10 w-10 text-destructive hover:text-destructive min-h-[44px] min-w-[44px] md:h-6 md:w-6 md:min-h-[24px] md:min-w-[24px]"
                       onClick={() => removeLine(index)}
                     >
                       <Trash2 className="w-4 h-4 md:w-3 md:h-3" />
                     </Button>
                   </div>
                 </div>
-                <div className="ml-3 text-right">
-                  <p className="font-medium text-sm">{formatCurrency((line.unitPrice || 0) * line.quantity)}</p>
+                <div className="ml-4 text-right">
+                  <p className="font-bold text-base leading-tight">
+                    {formatCurrency((line.unitPrice || 0) * line.quantity)}
+                  </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <Separator className="my-3 md:my-4" />
+        <Separator className="my-4 md:my-4" />
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           <div className="flex justify-between items-center">
-            <span className="font-semibold text-sm md:text-base">Subtotal</span>
-            <span className="font-semibold text-sm md:text-base">{formatCurrency(total || 0)}</span>
+            <span className="font-bold text-base leading-tight md:text-base">Subtotal</span>
+            <span className="font-bold text-base leading-tight md:text-base">{formatCurrency(total || 0)}</span>
           </div>
 
           <Button
-            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[44px]"
+            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[48px] text-base font-semibold leading-tight"
             size="lg"
             disabled={itemCount === 0 || !cart.table_number || isPlacingOrder}
             onClick={placeOrder}
@@ -296,7 +303,7 @@ export function CartSidebar() {
             )}
           </Button>
 
-          <p className="text-xs text-muted-foreground text-center">
+          <p className="text-sm text-muted-foreground text-center leading-relaxed">
             {itemCount} item{itemCount !== 1 ? "s" : ""}
           </p>
         </div>

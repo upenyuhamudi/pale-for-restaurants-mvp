@@ -139,25 +139,30 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div>
-          <Label htmlFor="name">Name *</Label>
+    <form onSubmit={handleSubmit} className="space-y-4 md:space-y-6">
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="name" className="text-sm font-medium md:text-base">
+            Name *
+          </Label>
           <Input
             id="name"
             value={formData.name}
             onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
             required
+            className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
           />
         </div>
 
-        <div>
-          <Label htmlFor="category">Category *</Label>
+        <div className="space-y-2">
+          <Label htmlFor="category" className="text-sm font-medium md:text-base">
+            Category *
+          </Label>
           <Select
             value={formData.category_id}
             onValueChange={(value) => setFormData((prev) => ({ ...prev, category_id: value }))}
           >
-            <SelectTrigger>
+            <SelectTrigger className="min-h-[44px] md:min-h-[40px]">
               <SelectValue placeholder="Select category" />
             </SelectTrigger>
             <SelectContent>
@@ -171,21 +176,26 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="description">Description</Label>
+      <div className="space-y-2">
+        <Label htmlFor="description" className="text-sm font-medium md:text-base">
+          Description
+        </Label>
         <Textarea
           id="description"
           value={formData.description}
           onChange={(e) => setFormData((prev) => ({ ...prev, description: e.target.value }))}
           rows={3}
+          className="min-h-[88px] text-base resize-none md:text-sm"
         />
       </div>
 
       {itemType === "meal" ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="price">Price (R) *</Label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="space-y-2">
+              <Label htmlFor="price" className="text-sm font-medium md:text-base">
+                Price (R) *
+              </Label>
               <Input
                 id="price"
                 type="number"
@@ -193,16 +203,19 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                 value={formData.price}
                 onChange={(e) => setFormData((prev) => ({ ...prev, price: e.target.value }))}
                 required
+                className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
               />
             </div>
 
-            <div>
-              <Label htmlFor="dietary_category">Dietary Category</Label>
+            <div className="space-y-2">
+              <Label htmlFor="dietary_category" className="text-sm font-medium md:text-base">
+                Dietary Category
+              </Label>
               <Select
                 value={formData.dietary_category}
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, dietary_category: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px] md:min-h-[40px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -213,13 +226,15 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
               </Select>
             </div>
 
-            <div>
-              <Label htmlFor="availability">Availability</Label>
+            <div className="space-y-2">
+              <Label htmlFor="availability" className="text-sm font-medium md:text-base">
+                Availability
+              </Label>
               <Select
                 value={formData.availability_status}
                 onValueChange={(value) => setFormData((prev) => ({ ...prev, availability_status: value }))}
               >
-                <SelectTrigger>
+                <SelectTrigger className="min-h-[44px] md:min-h-[40px]">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -230,9 +245,11 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div>
-              <Label htmlFor="allowed_sides">Allowed Sides</Label>
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+            <div className="space-y-2">
+              <Label htmlFor="allowed_sides" className="text-sm font-medium md:text-base">
+                Allowed Sides
+              </Label>
               <Input
                 id="allowed_sides"
                 type="number"
@@ -241,11 +258,14 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, allowed_sides: Number.parseInt(e.target.value) || 0 }))
                 }
+                className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
               />
             </div>
 
-            <div>
-              <Label htmlFor="allowed_extras">Allowed Extras</Label>
+            <div className="space-y-2">
+              <Label htmlFor="allowed_extras" className="text-sm font-medium md:text-base">
+                Allowed Extras
+              </Label>
               <Input
                 id="allowed_extras"
                 type="number"
@@ -254,23 +274,26 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                 onChange={(e) =>
                   setFormData((prev) => ({ ...prev, allowed_extras: Number.parseInt(e.target.value) || 0 }))
                 }
+                className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
               />
             </div>
 
-            <div className="flex items-center space-x-2 pt-6">
+            <div className="flex items-center space-x-3 pt-6 min-h-[44px]">
               <Switch
                 id="extras_allowed"
                 checked={formData.extras_allowed}
                 onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, extras_allowed: checked }))}
+                className="data-[state=checked]:bg-brand-orange"
               />
-              <Label htmlFor="extras_allowed">Extras Allowed</Label>
+              <Label htmlFor="extras_allowed" className="text-sm font-medium md:text-base">
+                Extras Allowed
+              </Label>
             </div>
           </div>
 
-          {/* Allergens */}
-          <div>
-            <Label>Allergens</Label>
-            <div className="flex space-x-2 mb-2">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium md:text-base">Allergens</Label>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
               <Input
                 placeholder="Add allergen"
                 value={newAllergen}
@@ -278,21 +301,29 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                 onKeyPress={(e) =>
                   e.key === "Enter" && (e.preventDefault(), addToArray("allergens", newAllergen, setNewAllergen))
                 }
+                className="flex-1 min-h-[44px] text-base md:text-sm md:min-h-[40px]"
               />
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={() => addToArray("allergens", newAllergen, setNewAllergen)}
+                className="min-h-[44px] px-4 md:min-h-[40px] md:px-3"
               >
                 <Plus className="w-4 h-4" />
+                <span className="ml-2 sm:hidden">Add</span>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.allergens.map((allergen, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                <Badge key={index} variant="secondary" className="flex items-center space-x-2 py-2 px-3 text-sm">
                   <span>{allergen}</span>
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => removeFromArray("allergens", index)} />
+                  <button
+                    type="button"
+                    onClick={() => removeFromArray("allergens", index)}
+                    className="hover:bg-destructive/20 rounded-full p-1 min-w-[24px] min-h-[24px] flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
                 </Badge>
               ))}
             </div>
@@ -300,13 +331,12 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
         </>
       ) : (
         <>
-          {/* Drink Pricing */}
-          <div>
-            <Label>Pricing (R)</Label>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-2">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium md:text-base">Pricing (R)</Label>
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-4">
               {["glass", "shot", "bottle", "jug"].map((variant) => (
-                <div key={variant}>
-                  <Label htmlFor={variant} className="text-sm capitalize">
+                <div key={variant} className="space-y-2">
+                  <Label htmlFor={variant} className="text-sm capitalize font-medium">
                     {variant}
                   </Label>
                   <Input
@@ -324,16 +354,16 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                         },
                       }))
                     }
+                    className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
                   />
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Tasting Notes */}
-          <div>
-            <Label>Tasting Notes</Label>
-            <div className="flex space-x-2 mb-2">
+          <div className="space-y-3">
+            <Label className="text-sm font-medium md:text-base">Tasting Notes</Label>
+            <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
               <Input
                 placeholder="Add tasting note"
                 value={newTastingNote}
@@ -342,21 +372,29 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                   e.key === "Enter" &&
                   (e.preventDefault(), addToArray("tasting_notes", newTastingNote, setNewTastingNote))
                 }
+                className="flex-1 min-h-[44px] text-base md:text-sm md:min-h-[40px]"
               />
               <Button
                 type="button"
                 variant="outline"
-                size="sm"
                 onClick={() => addToArray("tasting_notes", newTastingNote, setNewTastingNote)}
+                className="min-h-[44px] px-4 md:min-h-[40px] md:px-3"
               >
                 <Plus className="w-4 h-4" />
+                <span className="ml-2 sm:hidden">Add</span>
               </Button>
             </div>
             <div className="flex flex-wrap gap-2">
               {formData.tasting_notes.map((note, index) => (
-                <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                <Badge key={index} variant="secondary" className="flex items-center space-x-2 py-2 px-3 text-sm">
                   <span>{note}</span>
-                  <X className="w-3 h-3 cursor-pointer" onClick={() => removeFromArray("tasting_notes", index)} />
+                  <button
+                    type="button"
+                    onClick={() => removeFromArray("tasting_notes", index)}
+                    className="hover:bg-destructive/20 rounded-full p-1 min-w-[24px] min-h-[24px] flex items-center justify-center"
+                  >
+                    <X className="w-3 h-3" />
+                  </button>
                 </Badge>
               ))}
             </div>
@@ -364,10 +402,9 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
         </>
       )}
 
-      {/* Ingredients */}
-      <div>
-        <Label>Ingredients</Label>
-        <div className="flex space-x-2 mb-2">
+      <div className="space-y-3">
+        <Label className="text-sm font-medium md:text-base">Ingredients</Label>
+        <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
           <Input
             placeholder="Add ingredient"
             value={newIngredient}
@@ -375,42 +412,64 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
             onKeyPress={(e) =>
               e.key === "Enter" && (e.preventDefault(), addToArray("ingredients", newIngredient, setNewIngredient))
             }
+            className="flex-1 min-h-[44px] text-base md:text-sm md:min-h-[40px]"
           />
           <Button
             type="button"
             variant="outline"
-            size="sm"
             onClick={() => addToArray("ingredients", newIngredient, setNewIngredient)}
+            className="min-h-[44px] px-4 md:min-h-[40px] md:px-3"
           >
             <Plus className="w-4 h-4" />
+            <span className="ml-2 sm:hidden">Add</span>
           </Button>
         </div>
         <div className="flex flex-wrap gap-2">
           {formData.ingredients.map((ingredient, index) => (
-            <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+            <Badge key={index} variant="secondary" className="flex items-center space-x-2 py-2 px-3 text-sm">
               <span>{ingredient}</span>
-              <X className="w-3 h-3 cursor-pointer" onClick={() => removeFromArray("ingredients", index)} />
+              <button
+                type="button"
+                onClick={() => removeFromArray("ingredients", index)}
+                className="hover:bg-destructive/20 rounded-full p-1 min-w-[24px] min-h-[24px] flex items-center justify-center"
+              >
+                <X className="w-3 h-3" />
+              </button>
             </Badge>
           ))}
         </div>
       </div>
 
-      <div>
-        <Label htmlFor="image_url">Image URL</Label>
+      <div className="space-y-2">
+        <Label htmlFor="image_url" className="text-sm font-medium md:text-base">
+          Image URL
+        </Label>
         <Input
           id="image_url"
           type="url"
           value={formData.image_url}
           onChange={(e) => setFormData((prev) => ({ ...prev, image_url: e.target.value }))}
           placeholder="https://example.com/image.jpg"
+          className="min-h-[44px] text-base md:text-sm md:min-h-[40px]"
         />
       </div>
 
-      <div className="flex space-x-4 pt-4">
-        <Button type="submit" disabled={loading} className="bg-orange-600 hover:bg-orange-700">
+      <div className="flex flex-col gap-3 pt-6 sm:flex-row sm:gap-4">
+        <Button
+          type="submit"
+          disabled={loading}
+          className="bg-orange-600 hover:bg-orange-700 text-white min-h-[44px] order-1 sm:order-1 md:min-h-[40px]"
+          size="lg"
+        >
           {loading ? "Saving..." : item ? "Update Item" : "Create Item"}
         </Button>
-        <Button type="button" variant="outline" onClick={onCancel}>
+        <Button
+          type="button"
+          variant="outline"
+          onClick={onCancel}
+          className="min-h-[44px] order-2 sm:order-2 md:min-h-[40px] bg-transparent"
+          size="lg"
+        >
           Cancel
         </Button>
       </div>

@@ -270,34 +270,36 @@ export default function OrdersPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <div className="container mx-auto px-4 py-8 max-w-4xl pb-24 md:pb-8">
-        <div className="mb-8">
+      <div className="container mx-auto px-4 py-6 max-w-4xl pb-24 md:py-8 md:pb-8">
+        <div className="mb-6 md:mb-8">
           <Link
             href={`/r/${restaurantId}`}
-            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 md:hidden"
+            className="inline-flex items-center text-muted-foreground hover:text-foreground mb-4 min-h-[44px] md:hidden"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-5 h-5 mr-2 md:w-4 md:h-4" />
             Back to Menu
           </Link>
 
           {(!hasSearched || orders.length === 0) && (
-            <div className="text-center mb-8">
-              <h1 className="text-2xl font-bold mb-2">Track Your Orders</h1>
-              <p className="text-muted-foreground mb-6">Enter your name and table number to view your order status</p>
+            <div className="text-center mb-6 md:mb-8">
+              <h1 className="text-xl font-bold mb-2 md:text-2xl">Track Your Orders</h1>
+              <p className="text-muted-foreground mb-6 text-base leading-relaxed md:text-lg">
+                Enter your name and table number to view your order status
+              </p>
 
               {error && (
                 <Card className="max-w-md mx-auto mb-4 border-destructive">
                   <CardContent className="pt-4">
-                    <p className="text-destructive text-sm">{error}</p>
+                    <p className="text-destructive text-sm md:text-base">{error}</p>
                   </CardContent>
                 </Card>
               )}
 
               <Card className="max-w-md mx-auto">
                 <CardContent className="pt-6">
-                  <div className="space-y-4">
-                    <div>
-                      <label htmlFor="name" className="block text-sm font-medium mb-2">
+                  <div className="space-y-4 md:space-y-6">
+                    <div className="space-y-2">
+                      <label htmlFor="name" className="block text-sm font-medium mb-2 md:text-base">
                         Your Name
                       </label>
                       <Input
@@ -305,12 +307,12 @@ export default function OrdersPage() {
                         value={dinerName}
                         onChange={(e) => setDinerName(e.target.value)}
                         placeholder="Enter your name"
-                        className="text-center"
+                        className="text-center min-h-[48px] text-base md:text-lg"
                       />
                     </div>
 
-                    <div>
-                      <label htmlFor="table" className="block text-sm font-medium mb-2">
+                    <div className="space-y-2">
+                      <label htmlFor="table" className="block text-sm font-medium mb-2 md:text-base">
                         Table Number
                       </label>
                       <Input
@@ -321,7 +323,7 @@ export default function OrdersPage() {
                           setTableNumber(value)
                         }}
                         placeholder="Enter table number"
-                        className="text-center text-lg font-semibold"
+                        className="text-center text-xl font-semibold min-h-[48px] md:text-2xl"
                         maxLength={3}
                       />
                     </div>
@@ -329,12 +331,12 @@ export default function OrdersPage() {
                     <Button
                       onClick={handleSearch}
                       disabled={!dinerName.trim() || !tableNumber.trim() || isLoading}
-                      className="w-full"
+                      className="w-full min-h-[48px] text-base font-semibold"
                       size="lg"
                     >
                       {isLoading ? (
                         <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
                           Searching...
                         </>
                       ) : (
@@ -348,28 +350,33 @@ export default function OrdersPage() {
           )}
 
           {hasSearched && (
-            <div className="space-y-6">
-              <div className="flex items-center justify-between">
-                <CardTitle className="text-xl font-semibold">
+            <div className="space-y-4 md:space-y-6">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <CardTitle className="text-lg font-semibold md:text-xl">
                   Orders for {dinerName} - Table {tableNumber}
                 </CardTitle>
-                <Button variant="outline" size="sm" onClick={handleRefresh} disabled={isLoading}>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={isLoading}
+                  className="min-h-[44px] md:min-h-auto bg-transparent"
+                >
                   <RefreshCw className={`w-4 h-4 mr-2 ${isLoading ? "animate-spin" : ""}`} />
                   Refresh
                 </Button>
               </div>
 
               {orders.length > 0 && (
-                <div className="space-y-3 mb-6">
-                  <Button onClick={handleBrowseMenu} className="w-full" size="lg">
-                    <Utensils className="w-4 h-4 mr-2" />
+                <div className="space-y-3 mb-4 md:mb-6">
+                  <Button onClick={handleBrowseMenu} className="w-full min-h-[48px] text-base font-semibold" size="lg">
+                    <Utensils className="w-5 h-5 mr-2" />
                     Browse Menu & Add Items
                   </Button>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:gap-2">
                     <Button
                       variant="outline"
-                      size="sm"
-                      className={`flex-1 ${orders.some((order) => order.bill_requested) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"}`}
+                      className={`flex-1 min-h-[48px] text-sm font-medium ${orders.some((order) => order.bill_requested) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"} md:min-h-[40px]`}
                       onClick={handleBillRequest}
                       disabled={isBillRequesting || orders.some((order) => order.bill_requested)}
                     >
@@ -382,8 +389,7 @@ export default function OrdersPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
-                      className={`flex-1 ${orders.some((order) => order.waiter_called) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"}`}
+                      className={`flex-1 min-h-[48px] text-sm font-medium ${orders.some((order) => order.waiter_called) ? "bg-gray-100 text-gray-500 cursor-not-allowed" : "bg-transparent"} md:min-h-[40px]`}
                       onClick={handleWaiterCall}
                       disabled={isWaiterCalling || orders.some((order) => order.waiter_called)}
                     >
