@@ -111,9 +111,8 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
         onClick={handleCardClick}
       >
         <CardContent className="p-0">
-          <div className="flex items-center gap-3 p-3">
-            {/* Image container - fixed square size */}
-            <div className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-muted/30">
+          <div className="flex items-center gap-3 md:gap-4 p-4 md:p-3">
+            <div className="relative flex-shrink-0 w-20 h-20 md:w-16 md:h-16 rounded-lg overflow-hidden bg-muted/30">
               {item.image_url ? (
                 <img
                   src={convertGoogleDriveUrl(item.image_url) || "/placeholder.svg"}
@@ -123,7 +122,7 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground/60">
-                  <span className="text-lg">{type === "meal" ? "🍽️" : "🥤"}</span>
+                  <span className="text-xl md:text-lg">{type === "meal" ? "🍽️" : "🥤"}</span>
                 </div>
               )}
 
@@ -136,27 +135,28 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
               )}
             </div>
 
-            {/* Content */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+              <h3 className="font-medium text-base md:text-sm leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
                 {item.name}
               </h3>
 
               {item.description && (
-                <p className="text-xs text-muted-foreground line-clamp-1 mt-1">{item.description}</p>
+                <p className="text-sm md:text-xs text-muted-foreground line-clamp-2 md:line-clamp-1 mt-1">
+                  {item.description}
+                </p>
               )}
 
-              <div className="flex items-center justify-between mt-2">
-                <span className="text-primary font-semibold text-sm">{getDisplayPrice()}</span>
+              <div className="flex items-center justify-between mt-3 md:mt-2">
+                <span className="text-primary font-semibold text-base md:text-sm">{getDisplayPrice()}</span>
 
                 {!isSoldOut && (
                   <Button
                     size="sm"
-                    className="h-7 w-7 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm relative z-10"
+                    className="h-9 w-9 md:h-7 md:w-7 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm relative z-10"
                     onClick={handleQuickAdd}
                     style={{ pointerEvents: "auto" }}
                   >
-                    <Plus className="h-3 w-3" />
+                    <Plus className="h-4 w-4 md:h-3 md:w-3" />
                   </Button>
                 )}
               </div>

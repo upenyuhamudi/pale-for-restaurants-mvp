@@ -84,7 +84,7 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
 
   return (
     <div className="w-full">
-      <div className="sticky top-[200px] md:top-[240px] z-30 bg-background/95 backdrop-blur-sm border-b pb-2 mb-4 -mx-4 px-4 shadow-sm">
+      <div className="sticky top-[180px] md:top-[220px] lg:top-[240px] z-30 bg-background/95 backdrop-blur-sm border-b pb-3 mb-4 -mx-3 md:-mx-4 lg:-mx-6 xl:-mx-8 px-3 md:px-4 lg:px-6 xl:px-8 shadow-sm">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <div className="relative">
             <div className="overflow-x-auto scrollbar-hide">
@@ -92,7 +92,7 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
                 <div className="flex gap-1 px-2">
                   <TabsTrigger
                     value="all"
-                    className="flex-shrink-0 px-3 py-2 rounded-md text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                    className="flex-shrink-0 px-4 py-3 md:px-3 md:py-2 rounded-md text-sm md:text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all min-h-[44px] md:min-h-auto"
                   >
                     All Items
                   </TabsTrigger>
@@ -100,7 +100,7 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
                     <TabsTrigger
                       key={category.id}
                       value={category.id}
-                      className="flex-shrink-0 px-3 py-2 rounded-md text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
+                      className="flex-shrink-0 px-4 py-3 md:px-3 md:py-2 rounded-md text-sm md:text-xs whitespace-nowrap data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all min-h-[44px] md:min-h-auto"
                     >
                       {category.name}
                     </TabsTrigger>
@@ -109,10 +109,10 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
               </TabsList>
             </div>
 
-            <div className="absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-background/95 via-background/60 to-transparent pointer-events-none flex items-center justify-start pl-1">
+            <div className="absolute left-0 top-0 bottom-0 w-6 md:w-8 bg-gradient-to-r from-background/95 via-background/60 to-transparent pointer-events-none flex items-center justify-start pl-1">
               <ChevronLeft className="w-4 h-4 text-primary/80 drop-shadow-sm" />
             </div>
-            <div className="absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-background/95 via-background/60 to-transparent pointer-events-none flex items-center justify-end pr-1">
+            <div className="absolute right-0 top-0 bottom-0 w-6 md:w-8 bg-gradient-to-l from-background/95 via-background/60 to-transparent pointer-events-none flex items-center justify-end pr-1">
               <ChevronRight className="w-4 h-4 text-primary/80 drop-shadow-sm" />
             </div>
           </div>
@@ -122,15 +122,15 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsContent value="all" className="mt-0">
           {getAllItems().length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                <span className="text-3xl">🍽️</span>
+            <div className="text-center py-12 md:py-16">
+              <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                <span className="text-2xl md:text-3xl">🍽️</span>
               </div>
-              <h3 className="text-lg font-semibold mb-2">No items available</h3>
-              <p className="text-muted-foreground">Check back later or try searching for something else.</p>
+              <h3 className="text-base md:text-lg font-semibold mb-2">No items available</h3>
+              <p className="text-sm text-muted-foreground">Check back later or try searching for something else.</p>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-2 md:space-y-3">
               {getAllItems().map((item) => (
                 <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
               ))}
@@ -143,15 +143,15 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
           return (
             <TabsContent key={category.id} value={category.id} className="mt-0">
               {categoryItems.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                    <span className="text-3xl">🍽️</span>
+                <div className="text-center py-12 md:py-16">
+                  <div className="w-16 h-16 md:w-20 md:h-20 mx-auto mb-3 md:mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                    <span className="text-2xl md:text-3xl">🍽️</span>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No items in {category.name}</h3>
-                  <p className="text-muted-foreground">Check back later or try a different category.</p>
+                  <h3 className="text-base md:text-lg font-semibold mb-2">No items in {category.name}</h3>
+                  <p className="text-sm text-muted-foreground">Check back later or try a different category.</p>
                 </div>
               ) : (
-                <div className="space-y-2">
+                <div className="space-y-2 md:space-y-3">
                   {categoryItems.map((item) => (
                     <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
                   ))}

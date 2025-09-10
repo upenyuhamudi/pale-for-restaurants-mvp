@@ -162,17 +162,17 @@ export function DrinkDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">{drink.name}</DialogTitle>
+      <DialogContent className="max-w-lg md:max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto mx-4 md:mx-auto">
+        <DialogHeader className="pb-3 md:pb-4">
+          <DialogTitle className="text-lg md:text-xl font-semibold pr-8">{drink.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {/* Image */}
           {drink.image_url && (
             <div
-              className="w-full relative overflow-hidden rounded-xl bg-gray-50 flex items-center justify-center"
-              style={{ aspectRatio: "1/1", maxHeight: "300px" }}
+              className="w-full relative overflow-hidden rounded-lg md:rounded-xl bg-gray-50 flex items-center justify-center"
+              style={{ aspectRatio: "1/1", maxHeight: "250px" }}
             >
               <img
                 src={convertGoogleDriveUrl(drink.image_url) || "/placeholder.svg"}
@@ -184,13 +184,15 @@ export function DrinkDetailModal({
           )}
 
           {/* Description */}
-          {drink.description && <p className="text-muted-foreground leading-relaxed">{drink.description}</p>}
+          {drink.description && (
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{drink.description}</p>
+          )}
 
           {/* Tasting Notes */}
           {drink.tasting_notes && drink.tasting_notes.length > 0 && (
             <div>
-              <h4 className="font-medium mb-2">Tasting Notes</h4>
-              <p className="text-sm text-muted-foreground leading-relaxed break-words">
+              <h4 className="font-medium mb-2 text-sm md:text-base">Tasting Notes</h4>
+              <p className="text-xs md:text-sm text-muted-foreground leading-relaxed break-words">
                 {drink.tasting_notes.join(", ")}
               </p>
             </div>
@@ -201,23 +203,26 @@ export function DrinkDetailModal({
           {/* Serving Type Selection */}
           {availableVariants.length > 0 && (
             <div>
-              <h4 className="font-medium mb-3">Choose Serving Size *</h4>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <h4 className="font-medium mb-3 text-sm md:text-base">Choose Serving Size *</h4>
+              <div className="grid grid-cols-1 gap-3">
                 {availableVariants.map((variant) => (
                   <button
                     key={variant}
                     onClick={() => handleVariantClick(variant)}
                     className={cn(
-                      "flex flex-col items-center p-4 rounded-md border-2 transition-all duration-200 w-full",
+                      "flex items-center justify-between p-4 rounded-lg border-2 transition-all duration-200 w-full min-h-[56px] md:min-h-[52px]",
                       "hover:border-brand-orange/50 focus:outline-none focus:ring-2 focus:ring-brand-orange/20",
                       selectedVariant === variant
                         ? "border-brand-orange bg-brand-orange text-white"
                         : "border-gray-200 bg-white text-gray-900 hover:bg-gray-50",
                     )}
                   >
-                    <span className="capitalize font-medium text-sm sm:text-base">{variant}</span>
+                    <span className="capitalize font-medium text-sm md:text-base">{variant}</span>
                     <span
-                      className={cn("text-xs sm:text-sm", selectedVariant === variant ? "opacity-90" : "opacity-60")}
+                      className={cn(
+                        "text-sm md:text-base font-semibold",
+                        selectedVariant === variant ? "opacity-90" : "opacity-60",
+                      )}
                     >
                       {formatCurrency(drink.pricing[variant])}
                     </span>
@@ -231,28 +236,41 @@ export function DrinkDetailModal({
 
           {/* Quantity */}
           <div className="flex items-center justify-between">
-            <span className="font-medium">Quantity</span>
+            <span className="font-medium text-sm md:text-base">Quantity</span>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1}
+                className="h-10 w-10 md:h-9 md:w-9"
+              >
                 <Minus className="w-4 h-4" />
               </Button>
-              <span className="w-8 text-center font-semibold">{quantity}</span>
-              <Button variant="outline" size="icon" onClick={() => handleQuantityChange(1)}>
+              <span className="w-8 text-center font-semibold text-base md:text-lg">{quantity}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(1)}
+                className="h-10 w-10 md:h-9 md:w-9"
+              >
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
           </div>
 
           {/* Footer */}
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="text-lg font-semibold">Total: {formatCurrency(totalPrice)}</div>
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-4 border-t">
+            <div className="text-lg md:text-xl font-semibold order-2 md:order-1 text-center md:text-left">
+              Total: {formatCurrency(totalPrice)}
+            </div>
             <Button
               onClick={() => {
                 console.log("[v0] Add to Cart button clicked - event triggered")
                 handleAddToCart()
               }}
               disabled={isAddDisabled}
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 disabled:opacity-50"
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 md:px-8 disabled:opacity-50 min-h-[48px] md:min-h-[44px] order-1 md:order-2"
               size="lg"
               onMouseDown={() => console.log("[v0] Add to Cart button mouse down")}
               onMouseUp={() => console.log("[v0] Add to Cart button mouse up")}

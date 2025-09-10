@@ -40,8 +40,8 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
 
   return (
     <Dialog open={isOpen} onOpenChange={() => {}}>
-      <DialogContent className="sm:max-w-md" hideClose>
-        <DialogHeader className="text-center">
+      <DialogContent className="sm:max-w-md mx-4 md:mx-auto" hideClose>
+        <DialogHeader className="text-center pb-2">
           <DialogTitle className="text-xl font-semibold">Welcome!</DialogTitle>
           <DialogDescription className="text-base">
             Please enter your table number to get started with your order.
@@ -62,7 +62,7 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
               value={dinerName}
               onChange={(e) => setDinerName(e.target.value)}
               placeholder="Enter your name"
-              className="text-center text-lg font-medium h-12"
+              className="text-center text-base md:text-lg font-medium h-12 md:h-14"
               autoFocus
             />
           </div>
@@ -79,16 +79,16 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
                 setTableNumber(value)
               }}
               placeholder="Enter table number"
-              className="text-center text-2xl font-semibold h-14 text-primary"
+              className="text-center text-xl md:text-2xl font-semibold h-14 md:h-16 text-primary"
               maxLength={3}
             />
           </div>
 
-          <div className="flex gap-3 pt-4">
+          <div className="flex flex-col md:flex-row gap-3 pt-4">
             <Button
               variant="outline"
               onClick={handleCancel}
-              className="flex-1 bg-transparent"
+              className="flex-1 bg-transparent min-h-[48px] md:min-h-[44px]"
               size="lg"
               disabled={isLoading}
             >
@@ -97,7 +97,7 @@ export function TableNumberModal({ isOpen, onClose, onTableNumberSet }: TableNum
             <Button
               onClick={handleConfirm}
               disabled={!dinerName.trim() || !tableNumber.trim() || isLoading}
-              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white"
+              className="flex-1 bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[48px] md:min-h-[44px]"
               size="lg"
             >
               {isLoading ? (

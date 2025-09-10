@@ -84,18 +84,18 @@ export function MenuHeader({
   }
 
   const FilterContent = ({ isMobile = false }: { isMobile?: boolean }) => (
-    <div className={`space-y-6 ${isMobile ? "p-6" : ""}`}>
+    <div className={`space-y-4 md:space-y-6 ${isMobile ? "p-4 md:p-6" : ""}`}>
       {/* Categories */}
-      <div className="space-y-3">
+      <div className="space-y-2 md:space-y-3">
         <h4 className="font-medium text-sm">Categories</h4>
         <div className="grid grid-cols-1 gap-2">
           {categories.map((category) => (
-            <label key={category.id} className="flex items-center space-x-3 cursor-pointer">
+            <label key={category.id} className="flex items-center space-x-3 cursor-pointer min-h-[44px] py-2">
               <input
                 type="checkbox"
                 checked={filters.categories.includes(category.id)}
                 onChange={() => toggleCategory(category.id)}
-                className="rounded border-gray-300 text-brand-orange focus:ring-brand-orange"
+                className="rounded border-gray-300 text-brand-orange focus:ring-brand-orange w-4 h-4"
               />
               <span className="text-sm font-medium">{category.name}</span>
             </label>
@@ -164,7 +164,7 @@ export function MenuHeader({
             clearFilters()
             setMobileFilterOpen(false)
           }}
-          className="w-full"
+          className="w-full min-h-[44px]"
         >
           <X className="w-4 h-4 mr-2" />
           Clear All Filters
@@ -177,7 +177,7 @@ export function MenuHeader({
     <header className="bg-card/95 backdrop-blur-sm border-b sticky top-0 z-40 shadow-sm">
       {/* Restaurant cover image with gradient overlay */}
       {restaurant.header_image && (
-        <div className="h-28 md:h-40 relative overflow-hidden">
+        <div className="h-24 md:h-32 lg:h-40 relative overflow-hidden">
           <img
             src={restaurant.header_image || "/placeholder.svg"}
             alt={`${restaurant.name} cover`}
@@ -187,11 +187,11 @@ export function MenuHeader({
         </div>
       )}
 
-      <div className="container mx-auto px-4 md:px-6 py-4">
-        <div className="flex items-start gap-3 mb-4">
+      <div className="container mx-auto px-3 md:px-4 lg:px-6 py-3 md:py-4">
+        <div className="flex items-start gap-3 mb-3 md:mb-4">
           {/* Restaurant logo with better styling */}
           {restaurant.logo_url && (
-            <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-background shadow-md flex-shrink-0 bg-white">
+            <div className="w-12 h-12 md:w-14 md:h-14 lg:w-16 lg:h-16 rounded-xl overflow-hidden border-2 border-background shadow-md flex-shrink-0 bg-white">
               <img
                 src={restaurant.logo_url || "/placeholder.svg"}
                 alt={`${restaurant.name} logo`}
@@ -201,7 +201,9 @@ export function MenuHeader({
           )}
 
           <div className="flex-1 min-w-0">
-            <h1 className="text-lg md:text-xl font-bold text-foreground mb-1 leading-tight">{restaurant.name}</h1>
+            <h1 className="text-base md:text-lg lg:text-xl font-bold text-foreground mb-1 leading-tight">
+              {restaurant.name}
+            </h1>
             <div className="flex items-center gap-2 mb-1">
               {restaurant.category && (
                 <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
@@ -220,24 +222,24 @@ export function MenuHeader({
                 variant="outline"
                 size="sm"
                 onClick={onEditTable}
-                className="bg-accent/10 border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-accent/10 border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] text-xs md:text-sm"
               >
                 Table {tableNumber}
-                {dinerName && <span className="ml-1 text-muted-foreground">• {dinerName}</span>}
+                {dinerName && <span className="ml-1 text-muted-foreground hidden md:inline">• {dinerName}</span>}
               </Button>
             )}
           </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-2 md:space-y-3">
           {/* Search input */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Search menu items, ingredients, categories..."
+              placeholder="Search menu items..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-colors"
+              className="pl-10 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-colors min-h-[44px]"
             />
           </div>
 
@@ -246,7 +248,7 @@ export function MenuHeader({
             <div className="md:hidden">
               <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-muted/30">
+                  <Button variant="outline" size="sm" className="bg-muted/30 min-h-[44px]">
                     <Filter className="w-4 h-4 mr-1" />
                     Filters
                     {hasActiveFilters && (
@@ -256,8 +258,8 @@ export function MenuHeader({
                     )}
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
-                  <SheetHeader>
+                <SheetContent side="bottom" className="h-[85vh] overflow-y-auto">
+                  <SheetHeader className="pb-4">
                     <SheetTitle>Filter Menu</SheetTitle>
                   </SheetHeader>
                   <FilterContent isMobile={true} />

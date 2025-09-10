@@ -157,11 +157,11 @@ export function CartSidebar() {
 
   if (itemCount === 0) {
     return (
-      <div className="bg-card rounded-xl border p-6">
-        <h3 className="font-semibold text-lg mb-4">Your Order</h3>
-        <div className="text-center py-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-            <span className="text-2xl">🛒</span>
+      <div className="bg-card rounded-xl border p-4 md:p-6">
+        <h3 className="font-semibold text-base md:text-lg mb-4">Your Order</h3>
+        <div className="text-center py-6 md:py-8">
+          <div className="w-14 h-14 md:w-16 md:h-16 mx-auto mb-3 md:mb-4 rounded-full bg-muted flex items-center justify-center">
+            <span className="text-xl md:text-2xl">🛒</span>
           </div>
           <p className="text-muted-foreground text-sm mb-2">Your cart is empty</p>
           <p className="text-xs text-muted-foreground">Add items from the menu to get started</p>
@@ -172,10 +172,10 @@ export function CartSidebar() {
 
   return (
     <>
-      <div className="bg-card rounded-xl border p-6">
-        <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-lg">Your Order</h3>
-          <Badge variant="secondary" className="bg-primary/10 text-primary">
+      <div className="bg-card rounded-xl border p-4 md:p-6">
+        <div className="flex items-center justify-between mb-3 md:mb-4">
+          <h3 className="font-semibold text-base md:text-lg">Your Order</h3>
+          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs md:text-sm">
             {itemCount} item{itemCount !== 1 ? "s" : ""}
           </Badge>
         </div>
@@ -187,17 +187,15 @@ export function CartSidebar() {
           </div>
         )}
 
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="space-y-3 md:space-y-4 max-h-80 md:max-h-96 overflow-y-auto">
           {cart.lines.map((line, index) => (
             <div key={index} className="space-y-2">
-              <div className="flex justify-between items-start">
+              <div className="flex justify-between items-start gap-2">
                 <div className="flex-1 min-w-0">
                   <p className="font-medium text-sm leading-tight">{line.name}</p>
 
                   {line.type === "meal" && (
                     <div className="mt-1 space-y-1">
-                      
-
                       {line.sideIds.length > 0 && (
                         <div className="text-xs">
                           <span className="text-muted-foreground">Sides: </span>
@@ -235,12 +233,12 @@ export function CartSidebar() {
                     <p className="text-xs text-muted-foreground capitalize mt-1">{line.variant}</p>
                   )}
 
-                  <div className="flex items-center justify-between mt-2 mr-0 w-[115%]">
+                  <div className="flex items-center justify-between mt-3 md:mt-2">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6 bg-transparent"
+                        className="h-8 w-8 md:h-7 md:w-7 bg-transparent"
                         onClick={() => decrementLineQuantity(index)}
                         disabled={line.quantity <= 1}
                       >
@@ -250,7 +248,7 @@ export function CartSidebar() {
                       <Button
                         variant="outline"
                         size="icon"
-                        className="h-6 w-6 bg-transparent"
+                        className="h-8 w-8 md:h-7 md:w-7 bg-transparent"
                         onClick={() => incrementLineQuantity(index)}
                       >
                         <Plus className="w-3 h-3" />
@@ -259,16 +257,15 @@ export function CartSidebar() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="h-6 w-6 text-destructive hover:text-destructive"
+                      className="h-8 w-8 md:h-7 md:w-7 text-destructive hover:text-destructive"
                       onClick={() => removeLine(index)}
                     >
-                      <Trash2 className="w-3 h-3 flex-col justify-end items-end" />
+                      <Trash2 className="w-3 h-3" />
                     </Button>
                   </div>
                 </div>
-                <div className="ml-3 text-right">
+                <div className="ml-3 text-right flex-shrink-0">
                   <p className="font-medium text-sm">{formatCurrency((line.unitPrice || 0) * line.quantity)}</p>
-                  
                 </div>
               </div>
             </div>
@@ -277,14 +274,14 @@ export function CartSidebar() {
 
         <Separator className="my-4" />
 
-        <div className="space-y-3">
+        <div className="space-y-3 md:space-y-4">
           <div className="flex justify-between items-center">
-            <span className="font-semibold">Subtotal</span>
-            <span className="font-semibold">{formatCurrency(total || 0)}</span>
+            <span className="font-semibold text-sm md:text-base">Subtotal</span>
+            <span className="font-semibold text-sm md:text-base">{formatCurrency(total || 0)}</span>
           </div>
 
           <Button
-            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
+            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[48px] md:min-h-[40px]"
             size="lg"
             disabled={itemCount === 0 || !cart.table_number || isPlacingOrder}
             onClick={placeOrder}

@@ -300,14 +300,14 @@ export function MealDetailModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={handleClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-semibold">{meal.name}</DialogTitle>
+      <DialogContent className="max-w-lg md:max-w-2xl max-h-[95vh] md:max-h-[90vh] overflow-y-auto mx-4 md:mx-auto">
+        <DialogHeader className="pb-3 md:pb-4">
+          <DialogTitle className="text-lg md:text-xl font-semibold pr-8">{meal.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           {meal.image_url && (
-            <div className="aspect-video relative overflow-hidden rounded-xl">
+            <div className="aspect-video relative overflow-hidden rounded-lg md:rounded-xl">
               <img
                 src={convertGoogleDriveUrl(meal.image_url) || "/placeholder.svg"}
                 alt={meal.name}
@@ -317,14 +317,16 @@ export function MealDetailModal({
             </div>
           )}
 
-          {meal.description && <p className="text-muted-foreground leading-relaxed">{meal.description}</p>}
+          {meal.description && (
+            <p className="text-sm md:text-base text-muted-foreground leading-relaxed">{meal.description}</p>
+          )}
 
           {meal.allergens && meal.allergens.length > 0 && (
             <div>
-              <h4 className="font-medium mb-2">Allergens</h4>
+              <h4 className="font-medium mb-2 text-sm md:text-base">Allergens</h4>
               <div className="flex flex-wrap gap-2">
                 {meal.allergens.map((allergen, index) => (
-                  <Badge key={index} variant="outline" className="text-sm">
+                  <Badge key={index} variant="outline" className="text-xs md:text-sm">
                     {allergen}
                   </Badge>
                 ))}
@@ -336,20 +338,20 @@ export function MealDetailModal({
 
           {shouldShowSides() && (
             <div>
-              <h4 className="font-medium mb-3">
+              <h4 className="font-medium mb-3 text-sm md:text-base">
                 Choose Sides
-                <span className="text-sm text-muted-foreground ml-2">
+                <span className="text-xs md:text-sm text-muted-foreground ml-2">
                   ({selectedSides.length}/{meal.allowed_sides || 2} selected)
                 </span>
               </h4>
               {loadingSides ? (
                 <p className="text-sm text-muted-foreground">Loading sides...</p>
               ) : (
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 md:gap-3">
                   {sideMeals.map((sideMeal) => (
                     <label
                       key={sideMeal.id}
-                      className="flex items-center justify-between space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50"
+                      className="flex items-center justify-between space-x-3 p-3 md:p-4 rounded-lg border cursor-pointer hover:bg-muted/50 min-h-[48px] md:min-h-[52px]"
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -364,12 +366,12 @@ export function MealDetailModal({
                               setSelectedSides(selectedSides.filter((s) => s !== sideMeal.id))
                             }
                           }}
-                          className="rounded"
+                          className="rounded w-4 h-4 md:w-5 md:h-5"
                           disabled={
                             !selectedSides.includes(sideMeal.id) && selectedSides.length >= (meal.allowed_sides || 2)
                           }
                         />
-                        <span className="flex-1">{sideMeal.name}</span>
+                        <span className="flex-1 text-sm md:text-base">{sideMeal.name}</span>
                       </div>
                       <span className="text-sm font-medium text-brand-orange">
                         +{formatCurrency(getSidePrice(sideMeal.id))}
@@ -379,25 +381,27 @@ export function MealDetailModal({
                 </div>
               )}
               {selectedSides.length >= (meal.allowed_sides || 2) && (
-                <p className="text-sm text-muted-foreground mt-2">Maximum sides selected</p>
+                <p className="text-xs md:text-sm text-muted-foreground mt-2">Maximum sides selected</p>
               )}
             </div>
           )}
 
           {meal.extras_allowed && meal.extra_choices && meal.extra_choices.length > 0 && (
             <div>
-              <h4 className="font-medium mb-3">
+              <h4 className="font-medium mb-3 text-sm md:text-base">
                 Add Extras
-                <span className="text-sm text-muted-foreground ml-2">({selectedExtras.length} selected)</span>
+                <span className="text-xs md:text-sm text-muted-foreground ml-2">
+                  ({selectedExtras.length} selected)
+                </span>
               </h4>
               {loadingExtras ? (
                 <p className="text-sm text-muted-foreground">Loading extras...</p>
               ) : (
-                <div className="grid grid-cols-1 gap-2">
+                <div className="grid grid-cols-1 gap-2 md:gap-3">
                   {extraMeals.map((extraMeal) => (
                     <label
                       key={extraMeal.id}
-                      className="flex items-center justify-between space-x-3 p-3 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors"
+                      className="flex items-center justify-between space-x-3 p-3 md:p-4 rounded-lg border cursor-pointer hover:bg-muted/50 transition-colors min-h-[48px] md:min-h-[52px]"
                     >
                       <div className="flex items-center space-x-3">
                         <input
@@ -412,13 +416,13 @@ export function MealDetailModal({
                               setSelectedExtras(selectedExtras.filter((e) => e !== extraMeal.id))
                             }
                           }}
-                          className="rounded border-2 border-gray-300 text-brand-orange focus:ring-brand-orange focus:ring-2"
+                          className="rounded border-2 border-gray-300 text-brand-orange focus:ring-brand-orange focus:ring-2 w-4 h-4 md:w-5 md:h-5"
                           disabled={
                             !selectedExtras.includes(extraMeal.id) &&
                             selectedExtras.length >= (meal.allowed_extras || 0)
                           }
                         />
-                        <span className="flex-1 font-medium">{extraMeal.name}</span>
+                        <span className="flex-1 font-medium text-sm md:text-base">{extraMeal.name}</span>
                       </div>
                       <span className="text-sm font-medium text-brand-orange">
                         +{formatCurrency(getExtraPrice(extraMeal.id))}
@@ -428,15 +432,15 @@ export function MealDetailModal({
                 </div>
               )}
               {selectedExtras.length >= (meal.allowed_extras || 0) && (
-                <p className="text-sm text-muted-foreground mt-2">Maximum extras selected</p>
+                <p className="text-xs md:text-sm text-muted-foreground mt-2">Maximum extras selected</p>
               )}
             </div>
           )}
 
           {getEffectivePreferences().length > 0 && (
             <div>
-              <h4 className="font-medium mb-3">Preferences</h4>
-              <div className="space-y-4">
+              <h4 className="font-medium mb-3 text-sm md:text-base">Preferences</h4>
+              <div className="space-y-3 md:space-y-4">
                 {getEffectivePreferences().map((pref) => {
                   const options = getEffectivePreferenceOptions()[pref]
                   console.log(`[v0] Rendering preference: ${pref}, options:`, options)
@@ -450,7 +454,7 @@ export function MealDetailModal({
                   return (
                     <div
                       key={pref}
-                      className={isDoneness ? "p-3 border-2 border-orange-200 rounded-lg bg-orange-50" : ""}
+                      className={isDoneness ? "p-3 md:p-4 border-2 border-orange-200 rounded-lg bg-orange-50" : ""}
                     >
                       <label
                         className={`block text-sm font-medium mb-2 capitalize ${isDoneness ? "text-orange-700 font-semibold" : ""}`}
@@ -465,7 +469,9 @@ export function MealDetailModal({
                           setPreferences((prev) => ({ ...prev, [pref]: value }))
                         }}
                       >
-                        <SelectTrigger className={isDoneness ? "border-orange-300 focus:border-orange-500" : ""}>
+                        <SelectTrigger
+                          className={`min-h-[48px] md:min-h-[44px] ${isDoneness ? "border-orange-300 focus:border-orange-500" : ""}`}
+                        >
                           <SelectValue placeholder={`Select ${pref.replace(/_/g, " ")}`} />
                         </SelectTrigger>
                         <SelectContent>
@@ -486,24 +492,37 @@ export function MealDetailModal({
           <Separator />
 
           <div className="flex items-center justify-between">
-            <span className="font-medium">Quantity</span>
+            <span className="font-medium text-sm md:text-base">Quantity</span>
             <div className="flex items-center gap-3">
-              <Button variant="outline" size="icon" onClick={() => handleQuantityChange(-1)} disabled={quantity <= 1}>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(-1)}
+                disabled={quantity <= 1}
+                className="h-10 w-10 md:h-9 md:w-9"
+              >
                 <Minus className="w-4 h-4" />
               </Button>
-              <span className="w-8 text-center font-semibold">{quantity}</span>
-              <Button variant="outline" size="icon" onClick={() => handleQuantityChange(1)}>
+              <span className="w-8 text-center font-semibold text-base md:text-lg">{quantity}</span>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={() => handleQuantityChange(1)}
+                className="h-10 w-10 md:h-9 md:w-9"
+              >
                 <Plus className="w-4 h-4" />
               </Button>
             </div>
           </div>
 
-          <div className="flex items-center justify-between pt-4 border-t">
-            <div className="text-lg font-semibold">Total: {formatCurrency(totalPrice)}</div>
+          <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 md:gap-4 pt-4 border-t">
+            <div className="text-lg md:text-xl font-semibold order-2 md:order-1 text-center md:text-left">
+              Total: {formatCurrency(totalPrice)}
+            </div>
             <Button
               onClick={handleAddToCart}
               disabled={isAddDisabled}
-              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-8 disabled:opacity-50"
+              className="bg-brand-orange hover:bg-brand-orange/90 text-white px-6 md:px-8 disabled:opacity-50 min-h-[48px] md:min-h-[44px] order-1 md:order-2"
               size="lg"
             >
               Add to Cart
