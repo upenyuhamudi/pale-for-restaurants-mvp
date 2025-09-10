@@ -157,13 +157,13 @@ export function CartSidebar() {
 
   if (itemCount === 0) {
     return (
-      <div className="bg-card rounded-xl border p-6">
-        <h3 className="font-semibold text-lg mb-4">Your Order</h3>
-        <div className="text-center py-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-muted flex items-center justify-center">
-            <span className="text-2xl">🛒</span>
+      <div className="bg-card rounded-xl border p-4 md:p-6">
+        <h3 className="font-semibold text-base mb-3 sm:text-lg sm:mb-4">Your Order</h3>
+        <div className="text-center py-6 sm:py-8">
+          <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-muted flex items-center justify-center sm:w-16 sm:h-16 sm:mb-4">
+            <span className="text-xl sm:text-2xl">🛒</span>
           </div>
-          <p className="text-muted-foreground text-sm mb-2">Your cart is empty</p>
+          <p className="text-muted-foreground text-xs mb-2 sm:text-sm">Your cart is empty</p>
           <p className="text-xs text-muted-foreground">Add items from the menu to get started</p>
         </div>
       </div>
@@ -172,32 +172,30 @@ export function CartSidebar() {
 
   return (
     <>
-      <div className="bg-card rounded-xl border p-6">
+      <div className="bg-card rounded-xl border p-4 md:p-6">
         <div className="flex items-center justify-between mb-2">
-          <h3 className="font-semibold text-lg">Your Order</h3>
-          <Badge variant="secondary" className="bg-primary/10 text-primary">
+          <h3 className="font-semibold text-base sm:text-lg">Your Order</h3>
+          <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
             {itemCount} item{itemCount !== 1 ? "s" : ""}
           </Badge>
         </div>
 
         {cart.table_number && (
-          <div className="mb-4">
-            <p className="text-sm text-muted-foreground">Table {cart.table_number}</p>
-            {cart.diner_name && <p className="text-sm text-muted-foreground">{cart.diner_name}</p>}
+          <div className="mb-3 sm:mb-4">
+            <p className="text-xs text-muted-foreground sm:text-sm">Table {cart.table_number}</p>
+            {cart.diner_name && <p className="text-xs text-muted-foreground sm:text-sm">{cart.diner_name}</p>}
           </div>
         )}
 
-        <div className="space-y-4 max-h-96 overflow-y-auto">
+        <div className="space-y-3 max-h-80 overflow-y-auto sm:space-y-4 sm:max-h-96">
           {cart.lines.map((line, index) => (
             <div key={index} className="space-y-2">
               <div className="flex justify-between items-start">
                 <div className="flex-1 min-w-0">
-                  <p className="font-medium text-sm leading-tight">{line.name}</p>
+                  <p className="leading-tight sm:text-sm font-semibold text-sm">{line.name}</p>
 
                   {line.type === "meal" && (
                     <div className="mt-1 space-y-1">
-                      
-
                       {line.sideIds.length > 0 && (
                         <div className="text-xs">
                           <span className="text-muted-foreground">Sides: </span>
@@ -235,7 +233,7 @@ export function CartSidebar() {
                     <p className="text-xs text-muted-foreground capitalize mt-1">{line.variant}</p>
                   )}
 
-                  <div className="flex items-center justify-between mt-2 mr-0 w-[115%]">
+                  <div className="flex items-center justify-between mt-2 mr-0 w-[115%] py-[31px]">
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
@@ -246,7 +244,7 @@ export function CartSidebar() {
                       >
                         <Minus className="w-3 h-3" />
                       </Button>
-                      <span className="text-sm font-medium w-6 text-center">{line.quantity}</span>
+                      <span className="text-xs font-medium w-6 text-center sm:text-sm">{line.quantity}</span>
                       <Button
                         variant="outline"
                         size="icon"
@@ -262,29 +260,30 @@ export function CartSidebar() {
                       className="h-6 w-6 text-destructive hover:text-destructive"
                       onClick={() => removeLine(index)}
                     >
-                      <Trash2 className="w-3 h-3 flex-col justify-end items-end" />
+                      <Trash2 className="w-3 h-3 flex-col justify-end items-end pl-0" />
                     </Button>
                   </div>
                 </div>
                 <div className="ml-3 text-right">
-                  <p className="font-medium text-sm">{formatCurrency((line.unitPrice || 0) * line.quantity)}</p>
-                  
+                  <p className="font-medium sm:text-sm text-sm">
+                    {formatCurrency((line.unitPrice || 0) * line.quantity)}
+                  </p>
                 </div>
               </div>
             </div>
           ))}
         </div>
 
-        <Separator className="my-4" />
+        <Separator className="my-3 sm:my-4" />
 
         <div className="space-y-3">
           <div className="flex justify-between items-center">
-            <span className="font-semibold">Subtotal</span>
-            <span className="font-semibold">{formatCurrency(total || 0)}</span>
+            <span className="font-semibold text-sm sm:text-base">Subtotal</span>
+            <span className="font-semibold text-sm sm:text-base">{formatCurrency(total || 0)}</span>
           </div>
 
           <Button
-            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
+            className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[44px]"
             size="lg"
             disabled={itemCount === 0 || !cart.table_number || isPlacingOrder}
             onClick={placeOrder}

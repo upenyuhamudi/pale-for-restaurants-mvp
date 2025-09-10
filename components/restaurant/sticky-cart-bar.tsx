@@ -132,16 +132,16 @@ export function StickyCartBar() {
 
   return (
     <>
-      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-4 z-50 shadow-lg">
+      <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t p-3 z-50 shadow-lg sm:p-4">
         <Sheet open={isOpen} onOpenChange={setIsOpen}>
           <SheetTrigger asChild>
             <Button
-              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white h-12 text-base font-semibold"
+              className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white h-12 text-sm font-semibold min-h-[44px] sm:text-base"
               size="lg"
             >
               <div className="flex items-center justify-between w-full">
                 <div className="flex items-center gap-2">
-                  <ShoppingCart className="w-5 h-5" />
+                  <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                   <span>
                     {itemCount} item{itemCount !== 1 ? "s" : ""}
                   </span>
@@ -151,13 +151,13 @@ export function StickyCartBar() {
             </Button>
           </SheetTrigger>
 
-          <SheetContent side="bottom" className="h-[80vh]">
+          <SheetContent side="bottom" className="h-[85vh] sm:h-[80vh]">
             <SheetHeader>
-              <SheetTitle className="flex items-center justify-between">
+              <SheetTitle className="flex items-center justify-between text-base sm:text-lg">
                 <span>Your Order</span>
                 {cart.table_number && (
                   <div className="text-right">
-                    <Badge variant="secondary" className="bg-primary/10 text-primary">
+                    <Badge variant="secondary" className="bg-primary/10 text-primary text-xs">
                       Table {cart.table_number}
                     </Badge>
                     {cart.diner_name && <p className="text-xs text-muted-foreground mt-1">{cart.diner_name}</p>}
@@ -166,8 +166,8 @@ export function StickyCartBar() {
               </SheetTitle>
             </SheetHeader>
 
-            <div className="mt-6 space-y-4">
-              <div className="space-y-4 max-h-[50vh] overflow-y-auto">
+            <div className="mt-4 space-y-3 sm:mt-6 sm:space-y-4">
+              <div className="space-y-3 max-h-[45vh] overflow-y-auto sm:space-y-4 sm:max-h-[50vh]">
                 {cart.lines.map((line, index) => (
                   <div key={index} className="space-y-3 p-4 rounded-lg border">
                     <div className="flex justify-between items-start">
@@ -264,14 +264,14 @@ export function StickyCartBar() {
 
               <Separator />
 
-              <div className="space-y-4">
-                <div className="flex justify-between items-center text-lg">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex justify-between items-center text-base sm:text-lg">
                   <span className="font-semibold">Total</span>
                   <span className="font-bold">{formatCurrency(total ?? 0)}</span>
                 </div>
 
                 <Button
-                  className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white"
+                  className="w-full bg-brand-orange hover:bg-brand-orange/90 text-white min-h-[44px]"
                   size="lg"
                   disabled={!cart.table_number || isPlacingOrder}
                   onClick={placeOrder}

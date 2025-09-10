@@ -4,6 +4,7 @@ import { useState } from "react"
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs"
 import { MenuItemCard } from "@/components/restaurant/menu-item-card"
 import { ChevronLeft, ChevronRight } from "lucide-react"
+import { useCartStore } from "@/store/cart"
 
 interface Category {
   id: string
@@ -57,6 +58,7 @@ interface MenuTabsProps {
 
 export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
   const [activeTab, setActiveTab] = useState(categories.length > 0 ? categories[0].id : "all")
+  const { cart } = useCartStore()
 
   const availableMeals = meals.filter((meal) => meal.availability_status !== "sold_out")
   const availableDrinks = drinks.filter((drink) => drink.availability_status !== "sold_out")
@@ -82,10 +84,14 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
 
   const orderedCategories = [...mealCategories, ...drinkCategories]
 
+  const handleTabChange = (categoryId: string) => {
+    setActiveTab(categoryId)
+  }
+
   return (
     <div className="w-full">
       <div className="sticky top-[200px] md:top-[240px] z-30 bg-background/95 backdrop-blur-sm border-b pb-2 mb-4 -mx-4 px-4 shadow-sm">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <div className="relative">
             <div className="overflow-x-auto scrollbar-hide">
               <TabsList className="inline-flex h-auto p-1 bg-muted/30 min-w-full">
@@ -119,48 +125,50 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
         </Tabs>
       </div>
 
-      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsContent value="all" className="mt-0">
-          {getAllItems().length === 0 ? (
-            <div className="text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                <span className="text-3xl">🍽️</span>
+      <div className="relative">
+        <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+          <TabsContent value="all" className="mt-0">
+            {getAllItems().length === 0 ? (
+              <div className="text-center py-16">
+                <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                  <span className="text-3xl">🍽️</span>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No items available</h3>
+                <p className="text-muted-foreground">Check back later or try searching for something else.</p>
               </div>
-              <h3 className="text-lg font-semibold mb-2">No items available</h3>
-              <p className="text-muted-foreground">Check back later or try searching for something else.</p>
-            </div>
-          ) : (
-            <div className="space-y-2">
-              {getAllItems().map((item) => (
-                <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
-              ))}
-            </div>
-          )}
-        </TabsContent>
+            ) : (
+              <div className="space-y-2">
+                {getAllItems().map((item) => (
+                  <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
+                ))}
+              </div>
+            )}
+          </TabsContent>
 
-        {orderedCategories.map((category) => {
-          const categoryItems = getItemsForCategory(category.id)
-          return (
-            <TabsContent key={category.id} value={category.id} className="mt-0">
-              {categoryItems.length === 0 ? (
-                <div className="text-center py-16">
-                  <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
-                    <span className="text-3xl">🍽️</span>
+          {orderedCategories.map((category) => {
+            const categoryItems = getItemsForCategory(category.id)
+            return (
+              <TabsContent key={category.id} value={category.id} className="mt-0">
+                {categoryItems.length === 0 ? (
+                  <div className="text-center py-16">
+                    <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-muted/50 flex items-center justify-center">
+                      <span className="text-3xl">🍽️</span>
+                    </div>
+                    <h3 className="text-lg font-semibold mb-2">No items in {category.name}</h3>
+                    <p className="text-muted-foreground">Check back later or try a different category.</p>
                   </div>
-                  <h3 className="text-lg font-semibold mb-2">No items in {category.name}</h3>
-                  <p className="text-muted-foreground">Check back later or try a different category.</p>
-                </div>
-              ) : (
-                <div className="space-y-2">
-                  {categoryItems.map((item) => (
-                    <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
-                  ))}
-                </div>
-              )}
-            </TabsContent>
-          )
-        })}
-      </Tabs>
+                ) : (
+                  <div className="space-y-2">
+                    {categoryItems.map((item) => (
+                      <MenuItemCard key={item.id} item={item} type={"price" in item ? "meal" : "drink"} />
+                    ))}
+                  </div>
+                )}
+              </TabsContent>
+            )
+          })}
+        </Tabs>
+      </div>
     </div>
   )
 }

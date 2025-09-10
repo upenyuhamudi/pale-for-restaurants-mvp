@@ -105,13 +105,13 @@ export function BottomNavigation() {
   return (
     <>
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-card/95 backdrop-blur-sm border-t z-50 shadow-lg">
-        <div className="flex items-center justify-around px-2 py-2">
+        <div className="flex items-center justify-around px-2 py-3 space-x-1">
           {/* Menu Button */}
           <Button
             variant="ghost"
             size="sm"
             onClick={handleMenuClick}
-            className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 px-3 transition-colors ${
+            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-2 transition-colors min-h-[56px] max-w-[120px] ${
               isMenuPage
                 ? "text-brand-orange bg-brand-orange/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -126,7 +126,7 @@ export function BottomNavigation() {
             variant="ghost"
             size="sm"
             onClick={handleCartClick}
-            className="flex-1 flex flex-col items-center gap-1 h-auto py-2 px-3 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors relative"
+            className="flex-1 flex flex-col items-center gap-1 h-auto py-3 px-2 text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-colors relative min-h-[56px] max-w-[120px]"
           >
             <div className="relative">
               <ShoppingCart className="w-5 h-5" />
@@ -150,7 +150,7 @@ export function BottomNavigation() {
             variant="ghost"
             size="sm"
             onClick={handleOrdersClick}
-            className={`flex-1 flex flex-col items-center gap-1 h-auto py-2 px-3 transition-colors ${
+            className={`flex-1 flex flex-col items-center gap-1 h-auto py-3 px-2 transition-colors min-h-[56px] max-w-[120px] ${
               isOrdersPage
                 ? "text-brand-orange bg-brand-orange/10"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
@@ -162,13 +162,13 @@ export function BottomNavigation() {
         </div>
       </div>
 
-      {/* Cart Sheet */}
+      {/* Cart Sheet with mobile optimization */}
       <Sheet open={isCartOpen} onOpenChange={setIsCartOpen}>
-        <SheetContent side="bottom" className="h-[85vh] p-0">
-          <SheetHeader className="p-6 pb-4">
-            <SheetTitle>Your Cart</SheetTitle>
+        <SheetContent side="bottom" className="h-[90vh] p-0 max-h-[90vh] overflow-hidden">
+          <SheetHeader className="p-4 pb-3 border-b">
+            <SheetTitle className="text-base">Your Cart</SheetTitle>
           </SheetHeader>
-          <div className="px-6 pb-6 h-full overflow-hidden">
+          <div className="px-4 pb-4 h-full overflow-y-auto">
             <CartSidebar />
           </div>
         </SheetContent>

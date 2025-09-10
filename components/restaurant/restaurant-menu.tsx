@@ -306,7 +306,7 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
         />
       )}
 
-      <div className="flex flex-col min-h-screen bg-background">
+      <div className="flex flex-col min-h-screen overflow-x-hidden bg-background">
         <MenuHeader
           restaurant={restaurant}
           tableNumber={cart.table_number}
@@ -321,14 +321,14 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
         />
 
         <main className="flex-1 pb-20 md:pb-0">
-          <div className="px-4 md:px-6 lg:px-8">
+          <div className="container mx-auto px-4 md:px-6 py-4 md:py-6">
             <div className="flex gap-6 lg:gap-8">
               <div className="flex-1 min-w-0">
                 <MenuTabs meals={filteredMeals} drinks={filteredDrinks} categories={categories} />
               </div>
 
               <div className="hidden lg:block w-80 xl:w-96">
-                <div className="sticky top-24">
+                <div className="sticky top-24 p-4">
                   <CartSidebar />
                 </div>
               </div>

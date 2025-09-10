@@ -56,7 +56,7 @@ interface MenuItemCardProps {
 
 export function MenuItemCard({ item, type }: MenuItemCardProps) {
   const [showModal, setShowModal] = useState(false)
-  const { addMealLine, addDrinkLine, tableNumber } = useCartStore()
+  const { addMealLine, addDrinkLine, tableNumber, cart } = useCartStore()
 
   const isSoldOut = item.availability_status === "sold_out"
   const isHidden = item.availability_status === "hidden"
@@ -76,7 +76,6 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
 
     console.log("[v0] Plus button clicked for:", item.name, "type:", type)
 
-    // Table number will be required when actually adding to cart in the modal
     setShowModal(true)
   }
 
@@ -105,15 +104,14 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
     <>
       <Card
         className={cn(
-          "group cursor-pointer transition-all duration-300 hover:shadow-md hover:shadow-primary/10 bg-card border border-border/50 rounded-lg overflow-hidden",
+          "group cursor-pointer transition-all duration-300 hover:shadow-md hover:shadow-primary/10 bg-card border border-border/50 rounded-lg overflow-hidden min-h-[44px]",
           isSoldOut && "opacity-60 cursor-not-allowed",
         )}
         onClick={handleCardClick}
       >
         <CardContent className="p-0">
-          <div className="flex items-center gap-3 p-3">
-            {/* Image container - fixed square size */}
-            <div className="relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-muted/30">
+          <div className="flex items-center gap-2 p-3 sm:gap-3 sm:p-4">
+            <div className="relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden bg-muted/30 sm:w-14 sm:h-14 md:w-16 md:h-16">
               {item.image_url ? (
                 <img
                   src={convertGoogleDriveUrl(item.image_url) || "/placeholder.svg"}
@@ -123,7 +121,7 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-muted-foreground/60">
-                  <span className="text-lg">{type === "meal" ? "🍽️" : "🥤"}</span>
+                  <span className="text-sm sm:text-base md:text-lg">{type === "meal" ? "🍽️" : "🥤"}</span>
                 </div>
               )}
 
@@ -138,7 +136,7 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
 
             {/* Content */}
             <div className="flex-1 min-w-0">
-              <h3 className="font-medium text-sm leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors">
+              <h3 className="font-medium text-xs leading-tight text-foreground line-clamp-1 group-hover:text-primary transition-colors sm:text-sm">
                 {item.name}
               </h3>
 
@@ -147,12 +145,12 @@ export function MenuItemCard({ item, type }: MenuItemCardProps) {
               )}
 
               <div className="flex items-center justify-between mt-2">
-                <span className="text-primary font-semibold text-sm">{getDisplayPrice()}</span>
+                <span className="text-primary font-semibold text-xs sm:text-sm">{getDisplayPrice()}</span>
 
                 {!isSoldOut && (
                   <Button
                     size="sm"
-                    className="h-7 w-7 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm relative z-10"
+                    className="h-8 w-8 p-0 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm relative z-10 sm:h-7 sm:w-7"
                     onClick={handleQuickAdd}
                     style={{ pointerEvents: "auto" }}
                   >

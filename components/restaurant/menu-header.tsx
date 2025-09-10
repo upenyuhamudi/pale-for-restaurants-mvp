@@ -177,7 +177,7 @@ export function MenuHeader({
     <header className="bg-card/95 backdrop-blur-sm border-b sticky top-0 z-40 shadow-sm">
       {/* Restaurant cover image with gradient overlay */}
       {restaurant.header_image && (
-        <div className="h-28 md:h-40 relative overflow-hidden">
+        <div className="h-32 md:h-40 relative overflow-hidden">
           <img
             src={restaurant.header_image || "/placeholder.svg"}
             alt={`${restaurant.name} cover`}
@@ -187,11 +187,11 @@ export function MenuHeader({
         </div>
       )}
 
-      <div className="container mx-auto px-4 md:px-6 py-4">
-        <div className="flex items-start gap-3 mb-4">
-          {/* Restaurant logo with better styling */}
+      <div className="container mx-auto px-4 md:px-6 py-4 md:py-6 space-y-4 md:space-y-6">
+        <div className="flex items-start gap-3 md:gap-4">
+          {/* Restaurant logo with better mobile sizing */}
           {restaurant.logo_url && (
-            <div className="w-14 h-14 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-background shadow-md flex-shrink-0 bg-white">
+            <div className="w-12 h-12 md:w-16 md:h-16 rounded-xl overflow-hidden border-2 border-background shadow-md flex-shrink-0 bg-white">
               <img
                 src={restaurant.logo_url || "/placeholder.svg"}
                 alt={`${restaurant.name} logo`}
@@ -200,18 +200,15 @@ export function MenuHeader({
             </div>
           )}
 
-          <div className="flex-1 min-w-0">
-            <h1 className="text-lg md:text-xl font-bold text-foreground mb-1 leading-tight">{restaurant.name}</h1>
-            <div className="flex items-center gap-2 mb-1">
+          <div className="flex-1 min-w-0 space-y-2 md:space-y-3">
+            <h1 className="text-base md:text-xl font-bold text-foreground leading-tight">{restaurant.name}</h1>
+            <div className="flex items-center gap-2">
               {restaurant.category && (
-                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20">
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary border-primary/20 px-2 py-1">
                   {restaurant.category}
                 </Badge>
               )}
             </div>
-            {restaurant.location && (
-              <p className="text-xs md:text-sm text-muted-foreground leading-tight">{restaurant.location}</p>
-            )}
           </div>
 
           <div className="flex items-center gap-2 flex-shrink-0">
@@ -220,83 +217,88 @@ export function MenuHeader({
                 variant="outline"
                 size="sm"
                 onClick={onEditTable}
-                className="bg-accent/10 border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground transition-colors"
+                className="bg-accent/10 border-accent/30 text-accent hover:bg-accent hover:text-accent-foreground transition-colors min-h-[44px] px-3 py-2 text-xs md:text-sm"
               >
-                Table {tableNumber}
-                {dinerName && <span className="ml-1 text-muted-foreground">• {dinerName}</span>}
+                <span className="hidden sm:inline">Table </span>
+                {tableNumber}
+                {dinerName && <span className="ml-1 text-muted-foreground hidden md:inline">• {dinerName}</span>}
               </Button>
             )}
           </div>
         </div>
 
-        <div className="space-y-3">
-          {/* Search input */}
+        <div className="space-y-4 md:space-y-6">
+          {/* Search input with proper mobile sizing */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground w-4 h-4" />
             <Input
-              placeholder="Search menu items, ingredients, categories..."
+              placeholder="Search menu items..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="pl-10 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-colors"
+              className="pl-10 bg-muted/30 border-muted-foreground/20 focus:bg-background transition-colors min-h-[44px] text-sm"
             />
           </div>
 
-          {/* Filter controls */}
+          {/* Filter controls with mobile-first design */}
           <div className="flex items-center gap-2 flex-wrap">
             <div className="md:hidden">
               <Sheet open={mobileFilterOpen} onOpenChange={setMobileFilterOpen}>
                 <SheetTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-muted/30">
-                    <Filter className="w-4 h-4 mr-1" />
+                  <Button variant="outline" size="sm" className="bg-muted/30 min-h-[44px] px-4 py-2">
+                    <Filter className="w-4 h-4 mr-2" />
                     Filters
                     {hasActiveFilters && (
-                      <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
+                      <Badge
+                        variant="secondary"
+                        className="ml-2 h-4 w-4 p-0 text-xs bg-primary text-primary-foreground"
+                      >
                         •
                       </Badge>
                     )}
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="bottom" className="h-[80vh] overflow-y-auto">
-                  <SheetHeader>
+                <SheetContent side="bottom" className="h-[85vh] overflow-y-auto p-0">
+                  <SheetHeader className="p-6 pb-4 border-b">
                     <SheetTitle>Filter Menu</SheetTitle>
                   </SheetHeader>
-                  <FilterContent isMobile={true} />
+                  <div className="p-6">
+                    <FilterContent isMobile={true} />
+                  </div>
                 </SheetContent>
               </Sheet>
             </div>
 
-            <div className="hidden md:flex items-center gap-2 flex-wrap">
-              {/* Category filter */}
+            {/* Desktop filters with proper spacing */}
+            <div className="hidden md:flex items-center gap-3 flex-wrap">
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-muted/30">
-                    <Filter className="w-4 h-4 mr-1" />
+                  <Button variant="outline" size="sm" className="bg-muted/30 min-h-[44px]">
+                    <Filter className="w-4 h-4 mr-2" />
                     Categories
                     {filters.categories.length > 0 && (
-                      <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
+                      <Badge variant="secondary" className="ml-2 h-4 w-4 p-0 text-xs">
                         {filters.categories.length}
                       </Badge>
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-56" align="start">
+                <PopoverContent className="w-64 p-6" align="start">
                   <FilterContent />
                 </PopoverContent>
               </Popover>
 
-              {/* Price range filter */}
               <Popover>
                 <PopoverTrigger asChild>
-                  <Button variant="outline" size="sm" className="bg-muted/30">
+                  <Button variant="outline" size="sm" className="bg-muted/30 min-h-[44px]">
                     Price Range
                     {(filters.priceRange[0] > 0 || filters.priceRange[1] < maxPrice) && (
-                      <Badge variant="secondary" className="ml-1 h-4 w-4 p-0 text-xs">
+                      <Badge variant="secondary" className="ml-2 h-4 w-4 p-0 text-xs">
                         •
                       </Badge>
                     )}
                   </Button>
                 </PopoverTrigger>
-                <PopoverContent className="w-64" align="start">
+                <PopoverContent className="w-64 p-6" align="start">
                   <div className="space-y-4">
                     <h4 className="font-medium text-sm">Price Range</h4>
                     <div className="px-2">
@@ -322,7 +324,6 @@ export function MenuHeader({
                 </PopoverContent>
               </Popover>
 
-              {/* Dietary category filter */}
               <Select
                 value={filters.dietaryCategory}
                 onValueChange={(value) =>
@@ -332,7 +333,7 @@ export function MenuHeader({
                   })
                 }
               >
-                <SelectTrigger className="w-auto bg-muted/30 border-muted-foreground/20">
+                <SelectTrigger className="w-auto bg-muted/30 border-muted-foreground/20 min-h-[44px]">
                   <SelectValue placeholder="Dietary" />
                 </SelectTrigger>
                 <SelectContent>
@@ -344,32 +345,31 @@ export function MenuHeader({
                 </SelectContent>
               </Select>
 
-              {/* Clear filters button */}
               {hasActiveFilters && (
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={clearFilters}
-                  className="text-muted-foreground hover:text-foreground"
+                  className="text-muted-foreground hover:text-foreground min-h-[44px]"
                 >
-                  <X className="w-4 h-4 mr-1" />
+                  <X className="w-4 h-4 mr-2" />
                   Clear
                 </Button>
               )}
             </div>
           </div>
 
-          {/* Active filter badges */}
+          {/* Active filter badges with proper mobile spacing */}
           {hasActiveFilters && (
-            <div className="flex items-center gap-1 flex-wrap">
+            <div className="flex items-center gap-2 flex-wrap">
               {filters.categories.map((categoryId) => {
                 const category = categories.find((c) => c.id === categoryId)
                 return category ? (
-                  <Badge key={categoryId} variant="secondary" className="text-xs bg-primary/10 text-primary">
+                  <Badge key={categoryId} variant="secondary" className="text-xs bg-primary/10 text-primary px-2 py-1">
                     {category.name}
                     <button
                       onClick={() => toggleCategory(categoryId)}
-                      className="ml-1 hover:bg-primary/20 rounded-full p-0.5"
+                      className="ml-1 hover:bg-primary/20 rounded-full p-0.5 min-w-[16px] min-h-[16px]"
                     >
                       <X className="w-3 h-3" />
                     </button>
@@ -377,12 +377,12 @@ export function MenuHeader({
                 ) : null
               })}
               {(filters.priceRange[0] > 0 || filters.priceRange[1] < maxPrice) && (
-                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary px-2 py-1">
                   R{filters.priceRange[0]} - R{filters.priceRange[1]}
                 </Badge>
               )}
               {filters.dietaryCategory !== "all" && (
-                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary px-2 py-1">
                   {filters.dietaryCategory}
                 </Badge>
               )}
