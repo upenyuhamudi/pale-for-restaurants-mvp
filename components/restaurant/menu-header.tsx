@@ -119,13 +119,48 @@ export function MenuHeader({
             }
             max={maxPrice}
             min={0}
-            step={10}
+            step={1}
             className="w-full"
           />
         </div>
-        <div className="flex justify-between text-sm text-muted-foreground">
-          <span>R{filters.priceRange[0]}</span>
-          <span>R{filters.priceRange[1]}</span>
+        <div className="flex justify-between gap-2">
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-muted-foreground">R</span>
+            <Input
+              type="number"
+              value={filters.priceRange[0]}
+              onChange={(e) => {
+                const newMin = Math.max(0, Math.min(Number(e.target.value) || 0, filters.priceRange[1] - 1))
+                onFiltersChange({
+                  ...filters,
+                  priceRange: [newMin, filters.priceRange[1]],
+                })
+              }}
+              className="w-16 h-8 text-xs text-center border-muted-foreground/20"
+              min={0}
+              max={filters.priceRange[1] - 1}
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <span className="text-sm text-muted-foreground">R</span>
+            <Input
+              type="number"
+              value={filters.priceRange[1]}
+              onChange={(e) => {
+                const newMax = Math.min(
+                  maxPrice,
+                  Math.max(Number(e.target.value) || maxPrice, filters.priceRange[0] + 1),
+                )
+                onFiltersChange({
+                  ...filters,
+                  priceRange: [filters.priceRange[0], newMax],
+                })
+              }}
+              className="w-16 h-8 text-xs text-center border-muted-foreground/20"
+              min={filters.priceRange[0] + 1}
+              max={maxPrice}
+            />
+          </div>
         </div>
       </div>
 
@@ -312,13 +347,48 @@ export function MenuHeader({
                         }
                         max={maxPrice}
                         min={0}
-                        step={10}
+                        step={1}
                         className="w-full"
                       />
                     </div>
-                    <div className="flex justify-between text-sm text-muted-foreground">
-                      <span>R{filters.priceRange[0]}</span>
-                      <span>R{filters.priceRange[1]}</span>
+                    <div className="flex justify-between gap-2">
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-muted-foreground">R</span>
+                        <Input
+                          type="number"
+                          value={filters.priceRange[0]}
+                          onChange={(e) => {
+                            const newMin = Math.max(0, Math.min(Number(e.target.value) || 0, filters.priceRange[1] - 1))
+                            onFiltersChange({
+                              ...filters,
+                              priceRange: [newMin, filters.priceRange[1]],
+                            })
+                          }}
+                          className="w-16 h-8 text-xs text-center border-muted-foreground/20"
+                          min={0}
+                          max={filters.priceRange[1] - 1}
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <span className="text-sm text-muted-foreground">R</span>
+                        <Input
+                          type="number"
+                          value={filters.priceRange[1]}
+                          onChange={(e) => {
+                            const newMax = Math.min(
+                              maxPrice,
+                              Math.max(Number(e.target.value) || maxPrice, filters.priceRange[0] + 1),
+                            )
+                            onFiltersChange({
+                              ...filters,
+                              priceRange: [filters.priceRange[0], newMax],
+                            })
+                          }}
+                          className="w-16 h-8 text-xs text-center border-muted-foreground/20"
+                          min={filters.priceRange[0] + 1}
+                          max={maxPrice}
+                        />
+                      </div>
                     </div>
                   </div>
                 </PopoverContent>

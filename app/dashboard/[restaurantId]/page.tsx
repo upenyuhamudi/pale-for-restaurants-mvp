@@ -754,6 +754,21 @@ export default function RestaurantDashboard() {
     }
   }
 
+  const fetchSpecials = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("specials")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .order("name")
+
+      if (error) throw error
+      setSpecials(data || [])
+    } catch (error) {
+      console.error("[v0] Error fetching specials:", error)
+    }
+  }
+
   useEffect(() => {
     if (restaurantId) {
       fetchRestaurant()
@@ -762,6 +777,23 @@ export default function RestaurantDashboard() {
       fetchDrinks()
       fetchCategories() // Added fetchCategories call
       fetchAnalytics()
+    }
+  }, [restaurantId])
+
+  useEffect(() => {
+    if (!restaurantId) return
+
+    const refreshInterval = setInterval(() => {
+      console.log("[v0] Background refresh triggered")
+      fetchOrders()
+      fetchMeals()
+      fetchDrinks()
+      fetchSpecials()
+      fetchAnalytics()
+    }, 5000) // Refresh every 5 seconds
+
+    return () => {
+      clearInterval(refreshInterval)
     }
   }, [restaurantId])
 
