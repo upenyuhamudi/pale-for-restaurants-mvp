@@ -12,7 +12,6 @@ import {
   Clock,
   Users,
   ChefHat,
-  Menu,
   Plus,
   Edit,
   Trash2,
@@ -28,11 +27,15 @@ import {
   Utensils,
   Phone,
   ShoppingBag,
+  Search,
 } from "lucide-react"
 import { formatCurrency } from "@/lib/utils"
 import { MenuItemForm } from "@/components/dashboard/menu-item-form"
 import { Analytics as AnalyticsLib } from "@/lib/analytics"
 import { WaiterNameModal } from "@/components/dashboard/waiter-name-modal"
+import { NotificationBar } from "@/components/dashboard/notification-bar"
+import { Input } from "@/components/ui/input"
+import { SpecialForm } from "@/components/dashboard/special-form"
 
 interface Order {
   id: string
@@ -75,6 +78,7 @@ interface Meal {
   name: string
   side_choices: string[]
   extra_choices: string[]
+  category_id: string
 }
 
 interface MenuItem {
@@ -89,6 +93,10 @@ interface MenuItem {
   dietary_category?: string
   allowed_sides?: number
   tasting_notes?: string[]
+  extras_allowed?: boolean
+  allowed_extras?: number
+  requires_doneness?: boolean
+  preferences?: Record<string, any>
 }
 
 interface Analytics {
@@ -103,6 +111,39 @@ interface Analytics {
   topSellingMeals: Array<{ item_name: string; total_quantity: number }>
 }
 
+interface Category {
+  id: string
+  name: string
+}
+
+interface Special {
+  id: string
+  name: string
+  description: string
+  image_url?: string
+  restaurant_id: string
+  category: string
+  availability_status: string
+  special_type: string
+  original_price: any
+  special_price: any
+  discount_percentage?: number
+  start_date: string
+  end_date: string
+  start_time?: string
+  end_time?: string
+  days_of_week?: any
+  max_redemptions?: number
+  current_redemptions?: number
+  is_featured: boolean
+  terms_and_conditions?: string
+  ingredients?: any
+  allergens?: any
+  dietary_preferences?: any
+  created_at: string
+  updated_at: string
+}
+
 export default function RestaurantDashboard() {
   const params = useParams()
   const restaurantId = params.restaurantId as string
@@ -110,6 +151,7 @@ export default function RestaurantDashboard() {
   const [orders, setOrders] = useState<Order[]>([])
   const [meals, setMeals] = useState<MenuItem[]>([])
   const [drinks, setDrinks] = useState<MenuItem[]>([])
+  const [specials, setSpecials] = useState<Special[]>([])
   const [analytics, setAnalytics] = useState<Analytics | null>(null)
   const [loading, setLoading] = useState(true)
 
@@ -120,6 +162,9 @@ export default function RestaurantDashboard() {
   const [showEditModal, setShowEditModal] = useState(false)
   const [editingItem, setEditingItem] = useState<MenuItem | null>(null)
   const [itemType, setItemType] = useState<"meal" | "drink">("meal")
+  const [editingSpecial, setEditingSpecial] = useState<Special | null>(null)
+  const [showAddSpecialModal, setShowAddSpecialModal] = useState(false)
+  const [showEditSpecialModal, setShowEditSpecialModal] = useState(false)
 
   const [orderTab, setOrderTab] = useState("open")
   const [statusFilter, setStatusFilter] = useState<string>("all")
@@ -138,6 +183,16 @@ export default function RestaurantDashboard() {
     dinerName: string
     tableNumber: string
   } | null>(null)
+
+  const [categories, setCategories] = useState<Category[]>([])
+  const [selectedMealCategory, setSelectedMealCategory] = useState<string>("all")
+  const [selectedDrinkCategory, setSelectedDrinkCategory] = useState<string>("all")
+
+  const [selectedCategory, setSelectedCategory] = useState<string>("all")
+
+  const [searchQuery, setSearchQuery] = useState<string>("")
+  const [mealFeatureFilter, setMealFeatureFilter] = useState<string>("all")
+  const [drinkFeatureFilter, setDrinkFeatureFilter] = useState<string>("all")
 
   const supabase = createClient()
 
@@ -183,7 +238,7 @@ export default function RestaurantDashboard() {
           id, 
           name, 
           logo_url,
-          meals:meals(id, name, side_choices, extra_choices)
+          meals:meals(id, name, side_choices, extra_choices, category_id)
         `)
         .eq("id", restaurantId)
         .single()
@@ -217,16 +272,19 @@ export default function RestaurantDashboard() {
 
   const fetchMenuItems = async () => {
     try {
-      const [mealsResponse, drinksResponse] = await Promise.all([
+      const [mealsResponse, drinksResponse, specialsResponse] = await Promise.all([
         supabase.from("meals").select("*").eq("restaurant_id", restaurantId).order("name"),
         supabase.from("drinks").select("*").eq("restaurant_id", restaurantId).order("name"),
+        supabase.from("specials").select("*").eq("restaurant_id", restaurantId).order("name"),
       ])
 
       if (mealsResponse.error) throw mealsResponse.error
       if (drinksResponse.error) throw drinksResponse.error
+      if (specialsResponse.error) throw specialsResponse.error
 
       setMeals(mealsResponse.data || [])
       setDrinks(drinksResponse.data || [])
+      setSpecials(specialsResponse.data || [])
     } catch (error) {
       console.error("[v0] Error fetching menu items:", error)
     }
@@ -659,6 +717,185 @@ export default function RestaurantDashboard() {
     return acc
   }, {})
 
+  const fetchCategories = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("categories")
+        .select("*")
+        .eq("restaurant_id", restaurantId)
+        .order("name")
+
+      if (error) throw error
+      setCategories(data || [])
+    } catch (error) {
+      console.error("[v0] Error fetching categories:", error)
+    }
+  }
+
+  const fetchMeals = async () => {
+    try {
+      const { data, error } = await supabase.from("meals").select("*").eq("restaurant_id", restaurantId).order("name")
+
+      if (error) throw error
+      setMeals(data || [])
+    } catch (error) {
+      console.error("[v0] Error fetching meals:", error)
+    }
+  }
+
+  const fetchDrinks = async () => {
+    try {
+      const { data, error } = await supabase.from("drinks").select("*").eq("restaurant_id", restaurantId).order("name")
+
+      if (error) throw error
+      setDrinks(data || [])
+    } catch (error) {
+      console.error("[v0] Error fetching drinks:", error)
+    }
+  }
+
+  useEffect(() => {
+    if (restaurantId) {
+      fetchRestaurant()
+      fetchOrders()
+      fetchMeals()
+      fetchDrinks()
+      fetchCategories() // Added fetchCategories call
+      fetchAnalytics()
+    }
+  }, [restaurantId])
+
+  const getMealCategories = () => {
+    const mealCategoryIds = [...new Set(meals.map((meal) => meal.category_id).filter(Boolean))]
+    return categories.filter((category) => mealCategoryIds.includes(category.id))
+  }
+
+  const getDrinkCategories = () => {
+    const drinkCategoryIds = [...new Set(drinks.map((drink) => drink.category_id).filter(Boolean))]
+    return categories.filter((category) => drinkCategoryIds.includes(category.id))
+  }
+
+  const getFilteredMeals = () => {
+    let filtered = meals
+
+    // Filter by category
+    if (selectedMealCategory !== "all") {
+      filtered = filtered.filter((meal) => meal.category_id === selectedMealCategory)
+    }
+
+    if (mealFeatureFilter !== "all") {
+      filtered = filtered.filter((meal) => {
+        switch (mealFeatureFilter) {
+          case "extras":
+            return meal.extras_allowed || (meal.allowed_extras && meal.allowed_extras > 0)
+          case "sides":
+            return meal.allowed_sides && meal.allowed_sides > 0
+          case "preferences":
+            return meal.preferences && Array.isArray(meal.preferences) && meal.preferences.length > 0
+          default:
+            return true
+        }
+      })
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter((meal) => {
+        const categoryName = getCategoryName(meal.category_id || "").toLowerCase()
+        return (
+          meal.name.toLowerCase().includes(query) ||
+          meal.description?.toLowerCase().includes(query) ||
+          categoryName.includes(query)
+        )
+      })
+    }
+
+    return filtered
+  }
+
+  const getFilteredDrinks = () => {
+    let filtered = drinks
+
+    // Filter by category
+    if (selectedDrinkCategory !== "all") {
+      filtered = filtered.filter((drink) => drink.category_id === selectedDrinkCategory)
+    }
+
+    if (drinkFeatureFilter !== "all") {
+      filtered = filtered.filter((drink) => {
+        switch (drinkFeatureFilter) {
+          case "extras":
+            return drink.extras_allowed || (drink.allowed_extras && drink.allowed_extras > 0)
+          case "sides":
+            return drink.allowed_sides && drink.allowed_sides > 0
+          case "preferences":
+            return drink.preferences && Array.isArray(drink.preferences) && drink.preferences.length > 0
+          default:
+            return true
+        }
+      })
+    }
+
+    // Filter by search query
+    if (searchQuery.trim()) {
+      const query = searchQuery.toLowerCase()
+      filtered = filtered.filter((drink) => {
+        const categoryName = getCategoryName(drink.category_id || "").toLowerCase()
+        return (
+          drink.name.toLowerCase().includes(query) ||
+          drink.description?.toLowerCase().includes(query) ||
+          categoryName.includes(query)
+        )
+      })
+    }
+
+    return filtered
+  }
+
+  const getCategoryName = (categoryId: string) => {
+    const category = categories.find((cat) => cat.id === categoryId)
+    return category?.name || "Uncategorized"
+  }
+
+  const handleAddSpecial = () => {
+    setEditingSpecial(null)
+    setShowAddSpecialModal(true)
+  }
+
+  const handleEditSpecial = (special: Special) => {
+    setEditingSpecial(special)
+    setShowEditSpecialModal(true)
+  }
+
+  const handleDeleteSpecial = async (specialId: string) => {
+    try {
+      const { error } = await supabase.from("specials").delete().eq("id", specialId)
+      if (error) throw error
+      await fetchMenuItems()
+    } catch (error) {
+      console.error("[v0] Error deleting special:", error)
+    }
+  }
+
+  const toggleSpecialAvailability = async (specialId: string, currentStatus: string) => {
+    try {
+      const newStatus = currentStatus === "available" ? "unavailable" : "available"
+      const { error } = await supabase.from("specials").update({ availability_status: newStatus }).eq("id", specialId)
+      if (error) throw error
+      await fetchMenuItems()
+    } catch (error) {
+      console.error("[v0] Error updating special availability:", error)
+    }
+  }
+
+  const handleSaveSpecial = () => {
+    setShowAddSpecialModal(false)
+    setShowEditSpecialModal(false)
+    setEditingSpecial(null)
+    fetchMenuItems()
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -756,6 +993,8 @@ export default function RestaurantDashboard() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="space-y-6">
+          <NotificationBar restaurantId={restaurantId} />
+
           <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6 w-full">
             <TabsList className="grid w-full grid-cols-3">
               <TabsTrigger value="orders">Orders</TabsTrigger>
@@ -1424,6 +1663,15 @@ export default function RestaurantDashboard() {
                                       Mark as Served
                                     </Button>
                                   )}
+                                  {orderTab === "served" && order.status === "completed" && (
+                                    <Button
+                                      onClick={() => closeOrder(order.id)}
+                                      className="bg-red-600 hover:bg-red-700"
+                                      size="sm"
+                                    >
+                                      Close Order
+                                    </Button>
+                                  )}
 
                                   <div className="flex-1" />
                                   {order.bill_requested && (
@@ -1759,17 +2007,89 @@ export default function RestaurantDashboard() {
                         <Plus className="w-4 h-4 mr-2" />
                         Add Drink
                       </Button>
+                      <Button onClick={handleAddSpecial} className="bg-purple-600 hover:bg-purple-700">
+                        <Plus className="w-4 h-4 mr-2" />
+                        Add Special
+                      </Button>
                     </div>
                   </div>
 
+                  <div className="relative">
+                    <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                    <Input
+                      placeholder="Search meals, drinks, or categories..."
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      className="pl-10"
+                    />
+                  </div>
+
                   <TabsList>
-                    <TabsTrigger value="meals">Meals ({meals.length})</TabsTrigger>
-                    <TabsTrigger value="drinks">Drinks ({drinks.length})</TabsTrigger>
+                    <TabsTrigger value="meals">Meals ({getFilteredMeals().length})</TabsTrigger>
+                    <TabsTrigger value="drinks">Drinks ({getFilteredDrinks().length})</TabsTrigger>
+                    <TabsTrigger value="specials">Specials ({specials.length})</TabsTrigger>
                   </TabsList>
 
                   <TabsContent value="meals">
+                    <div className="border-b mb-4 space-y-3">
+                      {/* Category Filter */}
+                      <div className="flex space-x-1 overflow-x-auto pb-2">
+                        <Button
+                          variant={selectedMealCategory === "all" ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setSelectedMealCategory("all")}
+                          className="whitespace-nowrap"
+                        >
+                          All Categories
+                        </Button>
+                        {getMealCategories().map((category) => (
+                          <Button
+                            key={category.id}
+                            variant={selectedMealCategory === category.id ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setSelectedMealCategory(category.id)}
+                            className="whitespace-nowrap"
+                          >
+                            {category.name}
+                          </Button>
+                        ))}
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge
+                          variant={mealFeatureFilter === "all" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors px-3 py-1"
+                          onClick={() => setMealFeatureFilter("all")}
+                        >
+                          All Features
+                        </Badge>
+                        <Badge
+                          variant={mealFeatureFilter === "extras" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors px-3 py-1"
+                          onClick={() => setMealFeatureFilter("extras")}
+                        >
+                          With Extras (
+                          {meals.filter((m) => m.extras_allowed || (m.allowed_extras && m.allowed_extras > 0)).length})
+                        </Badge>
+                        <Badge
+                          variant={mealFeatureFilter === "sides" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 transition-colors px-3 py-1"
+                          onClick={() => setMealFeatureFilter("sides")}
+                        >
+                          With Sides ({meals.filter((m) => m.allowed_sides && m.allowed_sides > 0).length})
+                        </Badge>
+                        <Badge
+                          variant={mealFeatureFilter === "preferences" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 transition-colors px-3 py-1"
+                          onClick={() => setMealFeatureFilter("preferences")}
+                        >
+                          Requires Preferences ({meals.filter((m) => m.preferences && m.preferences.length > 0).length})
+                        </Badge>
+                      </div>
+                    </div>
+
                     <div className="space-y-4">
-                      {meals.map((meal) => (
+                      {getFilteredMeals().map((meal) => (
                         <Card key={meal.id}>
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
@@ -1791,6 +2111,9 @@ export default function RestaurantDashboard() {
                                       }
                                     >
                                       {meal.availability_status}
+                                    </Badge>
+                                    <Badge variant="outline" className="text-xs">
+                                      {getCategoryName(meal.category_id || "")}
                                     </Badge>
                                   </div>
                                   <p className="text-sm text-gray-600 mt-1">{meal.description}</p>
@@ -1829,54 +2152,199 @@ export default function RestaurantDashboard() {
                           </CardContent>
                         </Card>
                       ))}
-                      {meals.length === 0 && (
-                        <Card>
-                          <CardContent className="p-8 text-center">
-                            <Utensils className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No meals yet</h3>
-                            <p className="text-gray-500 mb-4">Add your first meal to get started with your menu.</p>
-                            <Button onClick={() => handleAddItem("meal")} className="bg-orange-600 hover:bg-orange-700">
-                              <Plus className="w-4 h-4 mr-2" />
-                              Add First Meal
-                            </Button>
-                          </CardContent>
-                        </Card>
+                      {getFilteredMeals().length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          {searchQuery.trim()
+                            ? `No meals found matching "${searchQuery}".`
+                            : selectedMealCategory === "all" && mealFeatureFilter === "all"
+                              ? "No meals found. Add your first meal to get started."
+                              : `No meals found matching the selected filters.`}
+                        </div>
                       )}
                     </div>
                   </TabsContent>
 
                   <TabsContent value="drinks" className="space-y-4">
-                    <div className="grid gap-4">
-                      {drinks.map((drink) => (
-                        <Card key={drink.id}>
+                    <div className="border-b mb-4">
+                      <div className="flex space-x-1 overflow-x-auto pb-2">
+                        <Button
+                          variant={selectedDrinkCategory === "all" ? "default" : "ghost"}
+                          size="sm"
+                          onClick={() => setSelectedDrinkCategory("all")}
+                          className="whitespace-nowrap"
+                        >
+                          All Categories
+                        </Button>
+                        {getDrinkCategories().map((category) => (
+                          <Button
+                            key={category.id}
+                            variant={selectedDrinkCategory === category.id ? "default" : "ghost"}
+                            size="sm"
+                            onClick={() => setSelectedDrinkCategory(category.id)}
+                            className="whitespace-nowrap"
+                          >
+                            {category.name}
+                          </Button>
+                        ))}
+                      </div>
+
+                      <div className="flex flex-wrap gap-2 mb-4">
+                        <Badge
+                          variant={drinkFeatureFilter === "all" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200 transition-colors px-3 py-1"
+                          onClick={() => setDrinkFeatureFilter("all")}
+                        >
+                          All Features
+                        </Badge>
+                        <Badge
+                          variant={drinkFeatureFilter === "extras" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-green-50 hover:text-green-700 hover:border-green-200 transition-colors px-3 py-1"
+                          onClick={() => setDrinkFeatureFilter("extras")}
+                        >
+                          With Extras (
+                          {drinks.filter((d) => d.extras_allowed || (d.allowed_extras && d.allowed_extras > 0)).length})
+                        </Badge>
+                        <Badge
+                          variant={drinkFeatureFilter === "sides" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-purple-50 hover:text-purple-700 hover:border-purple-200 transition-colors px-3 py-1"
+                          onClick={() => setDrinkFeatureFilter("sides")}
+                        >
+                          With Sides ({drinks.filter((d) => d.allowed_sides && d.allowed_sides > 0).length})
+                        </Badge>
+                        <Badge
+                          variant={drinkFeatureFilter === "preferences" ? "default" : "outline"}
+                          className="cursor-pointer hover:bg-orange-50 hover:text-orange-700 hover:border-orange-200 transition-colors px-3 py-1"
+                          onClick={() => setDrinkFeatureFilter("preferences")}
+                        >
+                          Requires Preferences ({drinks.filter((d) => d.preferences && d.preferences.length > 0).length}
+                          )
+                        </Badge>
+                      </div>
+                    </div>
+
+                    {getFilteredDrinks().map((drink) => (
+                      <Card key={drink.id}>
+                        <CardContent className="p-4">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-4">
+                              {drink.image_url && (
+                                <img
+                                  src={drink.image_url || "/placeholder.svg"}
+                                  alt={drink.name}
+                                  className="w-16 h-16 rounded-lg object-cover"
+                                />
+                              )}
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                  <h3 className="font-semibold">{drink.name}</h3>
+                                  <Badge
+                                    variant={drink.availability_status === "available" ? "default" : "secondary"}
+                                    className={
+                                      drink.availability_status === "available" ? "bg-green-100 text-green-800" : ""
+                                    }
+                                  >
+                                    {drink.availability_status}
+                                  </Badge>
+                                  <Badge variant="outline" className="text-xs">
+                                    {getCategoryName(drink.category_id || "")}
+                                  </Badge>
+                                </div>
+                                <p className="text-sm text-gray-600 mt-1">{drink.description}</p>
+                                <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                  <span className="font-medium text-blue-600">{getItemPrice(drink)}</span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center space-x-2">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => toggleAvailability(drink.id, "drink", drink.availability_status)}
+                              >
+                                {drink.availability_status === "available" ? (
+                                  <EyeOff className="w-4 h-4" />
+                                ) : (
+                                  <Eye className="w-4 h-4" />
+                                )}
+                              </Button>
+                              <Button variant="outline" size="sm" onClick={() => handleEditItem(drink, "drink")}>
+                                <Edit className="w-4 h-4" />
+                              </Button>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => handleDeleteItem(drink.id, "drink")}
+                                className="text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 className="w-4 h-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                    {getFilteredDrinks().length === 0 && (
+                      <div className="text-center py-8 text-muted-foreground">
+                        {searchQuery.trim()
+                          ? `No drinks found matching "${searchQuery}".`
+                          : selectedDrinkCategory === "all"
+                            ? "No drinks found. Add your first drink to get started."
+                            : `No drinks found in ${getDrinkCategories().find((c) => c.id === selectedDrinkCategory)?.name || "this category"}.`}
+                      </div>
+                    )}
+                  </TabsContent>
+                  <TabsContent value="specials" className="space-y-4">
+                    <div className="space-y-4">
+                      {specials.map((special) => (
+                        <Card key={special.id}>
                           <CardContent className="p-4">
                             <div className="flex items-center justify-between">
                               <div className="flex items-center space-x-4">
-                                {drink.image_url && (
+                                {special.image_url && (
                                   <img
-                                    src={drink.image_url || "/placeholder.svg"}
-                                    alt={drink.name}
+                                    src={special.image_url || "/placeholder.svg"}
+                                    alt={special.name}
                                     className="w-16 h-16 rounded-lg object-cover"
                                   />
                                 )}
                                 <div className="flex-1">
                                   <div className="flex items-center space-x-2">
-                                    <h3 className="font-semibold">{drink.name}</h3>
+                                    <h3 className="font-semibold">{special.name}</h3>
                                     <Badge
-                                      variant={drink.availability_status === "available" ? "default" : "secondary"}
+                                      variant={special.availability_status === "available" ? "default" : "secondary"}
                                       className={
-                                        drink.availability_status === "available" ? "bg-green-100 text-green-800" : ""
+                                        special.availability_status === "available" ? "bg-green-100 text-green-800" : ""
                                       }
                                     >
-                                      {drink.availability_status}
+                                      {special.availability_status}
                                     </Badge>
-                                  </div>
-                                  <p className="text-sm text-gray-600 mt-1">{drink.description}</p>
-                                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
-                                    <span className="font-medium text-blue-600">{getItemPrice(drink)}</span>
-                                    {drink.tasting_notes && drink.tasting_notes.length > 0 && (
-                                      <span>• {drink.tasting_notes.slice(0, 2).join(", ")}</span>
+                                    <Badge variant="outline" className="text-xs">
+                                      {special.special_type}
+                                    </Badge>
+                                    {special.is_featured && (
+                                      <Badge variant="default" className="bg-yellow-100 text-yellow-800">
+                                        Featured
+                                      </Badge>
                                     )}
+                                  </div>
+                                  <p className="text-sm text-gray-600 mt-1">{special.description}</p>
+                                  <div className="flex items-center space-x-4 mt-2 text-sm text-gray-500">
+                                    <span className="font-medium text-purple-600">
+                                      {special.special_price ? formatCurrency(special.special_price) : "N/A"}
+                                    </span>
+                                    {special.original_price && (
+                                      <span className="line-through text-gray-400">
+                                        {formatCurrency(special.original_price)}
+                                      </span>
+                                    )}
+                                    {special.discount_percentage && (
+                                      <span className="text-green-600 font-medium">
+                                        {special.discount_percentage}% off
+                                      </span>
+                                    )}
+                                    <span>
+                                      • {special.start_date} to {special.end_date}
+                                    </span>
                                   </div>
                                 </div>
                               </div>
@@ -1884,21 +2352,21 @@ export default function RestaurantDashboard() {
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => toggleAvailability(drink.id, "drink", drink.availability_status)}
+                                  onClick={() => toggleSpecialAvailability(special.id, special.availability_status)}
                                 >
-                                  {drink.availability_status === "available" ? (
+                                  {special.availability_status === "available" ? (
                                     <EyeOff className="w-4 h-4" />
                                   ) : (
                                     <Eye className="w-4 h-4" />
                                   )}
                                 </Button>
-                                <Button variant="outline" size="sm" onClick={() => handleEditItem(drink, "drink")}>
+                                <Button variant="outline" size="sm" onClick={() => handleEditSpecial(special)}>
                                   <Edit className="w-4 h-4" />
                                 </Button>
                                 <Button
                                   variant="outline"
                                   size="sm"
-                                  onClick={() => handleDeleteItem(drink.id, "drink")}
+                                  onClick={() => handleDeleteSpecial(special.id)}
                                   className="text-red-600 hover:text-red-700"
                                 >
                                   <Trash2 className="w-4 h-4" />
@@ -1908,20 +2376,10 @@ export default function RestaurantDashboard() {
                           </CardContent>
                         </Card>
                       ))}
-                      {drinks.length === 0 && (
-                        <Card>
-                          <CardContent className="text-center py-12">
-                            <Menu className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                            <h3 className="text-lg font-medium text-gray-900 mb-2">No drinks yet</h3>
-                            <p className="text-gray-500 mb-4">
-                              Start building your beverage menu by adding your first drink.
-                            </p>
-                            <Button onClick={() => handleAddItem("drink")} className="bg-blue-600 hover:bg-blue-700">
-                              <Plus className="w-4 h-4 mr-2" />
-                              Add First Drink
-                            </Button>
-                          </CardContent>
-                        </Card>
+                      {specials.length === 0 && (
+                        <div className="text-center py-8 text-muted-foreground">
+                          No specials found. Add your first special to get started.
+                        </div>
                       )}
                     </div>
                   </TabsContent>
@@ -2099,6 +2557,35 @@ export default function RestaurantDashboard() {
                 item={editingItem}
                 onSave={handleSaveItem}
                 onCancel={() => setShowEditModal(false)}
+              />
+            )}
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showAddSpecialModal} onOpenChange={setShowAddSpecialModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Add New Special</DialogTitle>
+            </DialogHeader>
+            <SpecialForm
+              restaurantId={restaurantId}
+              onSave={handleSaveSpecial}
+              onCancel={() => setShowAddSpecialModal(false)}
+            />
+          </DialogContent>
+        </Dialog>
+
+        <Dialog open={showEditSpecialModal} onOpenChange={setShowEditSpecialModal}>
+          <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Special</DialogTitle>
+            </DialogHeader>
+            {editingSpecial && (
+              <SpecialForm
+                restaurantId={restaurantId}
+                special={editingSpecial}
+                onSave={handleSaveSpecial}
+                onCancel={() => setShowEditSpecialModal(false)}
               />
             )}
           </DialogContent>

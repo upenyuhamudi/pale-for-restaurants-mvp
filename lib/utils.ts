@@ -6,8 +6,12 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function formatCurrency(amount: number): string {
-  return `R${amount.toFixed(2)}`
+export function formatCurrency(amount: number | string | null | undefined): string {
+  const numericAmount = typeof amount === "string" ? Number.parseFloat(amount) : amount
+  if (numericAmount == null || isNaN(numericAmount)) {
+    return "R0.00"
+  }
+  return `R${numericAmount.toFixed(2)}`
 }
 
 export function minDrinkPrice(pricing: Record<string, number | null>): number {

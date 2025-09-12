@@ -40,6 +40,8 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
     allowed_sides: item?.allowed_sides || 0,
     allowed_extras: item?.allowed_extras || 0,
     extras_allowed: item?.extras_allowed || false,
+    preferences: item?.preferences || [],
+    preference_options: item?.preference_options || {},
     // Drink specific fields
     pricing: item?.pricing || { glass: null, shot: null, bottle: null, jug: null },
     // Arrays
@@ -50,6 +52,7 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
   const [newIngredient, setNewIngredient] = useState("")
   const [newAllergen, setNewAllergen] = useState("")
   const [newTastingNote, setNewTastingNote] = useState("")
+  const [newDonenessOption, setNewDonenessOption] = useState("")
   const [loading, setLoading] = useState(false)
 
   const supabase = createClient()
@@ -96,6 +99,8 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
         data.allowed_extras = Number.parseInt(formData.allowed_extras.toString()) || 0
         data.extras_allowed = formData.extras_allowed
         data.allergens = formData.allergens
+        data.preferences = formData.preferences
+        data.preference_options = formData.preference_options
       } else {
         data.pricing = formData.pricing
         data.tasting_notes = formData.tasting_notes
@@ -135,6 +140,65 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
     setFormData((prev) => ({
       ...prev,
       [arrayName]: (prev[arrayName as keyof typeof prev] as string[]).filter((_, i) => i !== index),
+    }))
+  }
+
+  const hasDonenessPreference = () => {
+    return formData.preferences.includes("doneness")
+  }
+
+  const getDonenessOptions = () => {
+    return formData.preference_options?.doneness || []
+  }
+
+  const toggleDonenessPreference = (enabled: boolean) => {
+    if (enabled) {
+      // Add doneness to preferences if not already there
+      if (!formData.preferences.includes("doneness")) {
+        setFormData((prev) => ({
+          ...prev,
+          preferences: [...prev.preferences, "doneness"],
+          preference_options: {
+            ...prev.preference_options,
+            doneness: ["Rare", "Medium Rare", "Medium", "Medium Well", "Well Done"],
+          },
+        }))
+      }
+    } else {
+      // Remove doneness from preferences
+      setFormData((prev) => ({
+        ...prev,
+        preferences: prev.preferences.filter((p) => p !== "doneness"),
+        preference_options: {
+          ...prev.preference_options,
+          doneness: undefined,
+        },
+      }))
+    }
+  }
+
+  const addDonenessOption = (option: string) => {
+    if (option.trim()) {
+      const currentOptions = getDonenessOptions()
+      setFormData((prev) => ({
+        ...prev,
+        preference_options: {
+          ...prev.preference_options,
+          doneness: [...currentOptions, option.trim()],
+        },
+      }))
+      setNewDonenessOption("")
+    }
+  }
+
+  const removeDonenessOption = (index: number) => {
+    const currentOptions = getDonenessOptions()
+    setFormData((prev) => ({
+      ...prev,
+      preference_options: {
+        ...prev.preference_options,
+        doneness: currentOptions.filter((_, i) => i !== index),
+      },
     }))
   }
 
@@ -296,6 +360,53 @@ export function MenuItemForm({ restaurantId, itemType, item, onSave, onCancel }:
                 </Badge>
               ))}
             </div>
+          </div>
+
+          {/* Doneness Configuration */}
+          <div className="space-y-4 p-4 border rounded-lg">
+            <div className="flex items-center space-x-2">
+              <Switch
+                id="requires_doneness"
+                checked={hasDonenessPreference()}
+                onCheckedChange={toggleDonenessPreference}
+              />
+              <Label htmlFor="requires_doneness">Requires Doneness Selection</Label>
+            </div>
+
+            {hasDonenessPreference() && (
+              <div>
+                <Label>Doneness Options</Label>
+                <div className="flex space-x-2 mb-2">
+                  <Input
+                    placeholder="Add doneness option (e.g., Medium Rare)"
+                    value={newDonenessOption}
+                    onChange={(e) => setNewDonenessOption(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && (e.preventDefault(), addDonenessOption(newDonenessOption))}
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => addDonenessOption(newDonenessOption)}
+                  >
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  {getDonenessOptions().map((option: string, index: number) => (
+                    <Badge key={index} variant="secondary" className="flex items-center space-x-1">
+                      <span>{option}</span>
+                      <X className="w-3 h-3 cursor-pointer" onClick={() => removeDonenessOption(index)} />
+                    </Badge>
+                  ))}
+                </div>
+                {getDonenessOptions().length === 0 && (
+                  <p className="text-sm text-muted-foreground mt-1">
+                    Add doneness options like "Rare", "Medium", "Well Done"
+                  </p>
+                )}
+              </div>
+            )}
           </div>
         </>
       ) : (

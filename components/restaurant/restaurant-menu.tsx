@@ -324,7 +324,13 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
           <div className="container mx-auto px-4 md:px-6 py-4 md:py-6">
             <div className="flex gap-6 lg:gap-8">
               <div className="flex-1 min-w-0">
-                <MenuTabs meals={filteredMeals} drinks={filteredDrinks} categories={categories} />
+                <MenuTabs
+                  meals={filteredMeals}
+                  drinks={filteredDrinks}
+                  categories={categories}
+                  filters={filters}
+                  onFiltersChange={setFilters}
+                />
               </div>
 
               <div className="hidden lg:block w-80 xl:w-96">

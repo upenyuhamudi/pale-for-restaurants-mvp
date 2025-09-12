@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Tabs, TabsContent, TabsTrigger, TabsList } from "@/components/ui/tabs"
 import { MenuItemCard } from "@/components/restaurant/menu-item-card"
 import { ChevronLeft, ChevronRight } from "lucide-react"
@@ -54,11 +54,33 @@ interface MenuTabsProps {
   meals: Meal[]
   drinks: Drink[]
   categories: Category[]
+  filters: FilterState
+  onFiltersChange: (filters: FilterState) => void
 }
 
-export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
-  const [activeTab, setActiveTab] = useState(categories.length > 0 ? categories[0].id : "all")
+interface FilterState {
+  categories: string[]
+  priceRange: [number, number]
+  dietaryCategory: string
+}
+
+export function MenuTabs({ meals, drinks, categories, filters, onFiltersChange }: MenuTabsProps) {
+  const getActiveTabFromFilters = () => {
+    if (filters.categories.length === 1) {
+      return filters.categories[0]
+    }
+    return "all"
+  }
+
+  const [activeTab, setActiveTab] = useState(getActiveTabFromFilters())
   const { cart } = useCartStore()
+
+  useEffect(() => {
+    const newActiveTab = getActiveTabFromFilters()
+    if (newActiveTab !== activeTab) {
+      setActiveTab(newActiveTab)
+    }
+  }, [filters.categories])
 
   const availableMeals = meals.filter((meal) => meal.availability_status !== "sold_out")
   const availableDrinks = drinks.filter((drink) => drink.availability_status !== "sold_out")
@@ -86,6 +108,18 @@ export function MenuTabs({ meals, drinks, categories }: MenuTabsProps) {
 
   const handleTabChange = (categoryId: string) => {
     setActiveTab(categoryId)
+
+    if (categoryId === "all") {
+      onFiltersChange({
+        ...filters,
+        categories: [],
+      })
+    } else {
+      onFiltersChange({
+        ...filters,
+        categories: [categoryId],
+      })
+    }
   }
 
   return (
