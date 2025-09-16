@@ -11,6 +11,7 @@ import { PairingSuggestionModal } from "@/components/restaurant/pairing-suggesti
 import { BottomNavigation } from "@/components/restaurant/bottom-navigation"
 import { MealDetailModal } from "@/components/restaurant/meal-detail-modal"
 import { DrinkDetailModal } from "@/components/restaurant/drink-detail-modal"
+import type { FilterState } from "@/types/filter-state" // Added import for FilterState
 
 interface Restaurant {
   id: string
@@ -66,20 +67,38 @@ interface Drink {
   pairings_meals: string[] | null
 }
 
+interface Special {
+  id: string
+  restaurant_id: string
+  name: string
+  description: string | null
+  special_type: string
+  original_price: any | null
+  special_price: any | null
+  discount_percentage: number | null
+  start_date: string | null
+  end_date: string | null
+  start_time: string | null
+  end_time: string | null
+  days_of_week: any | null
+  max_redemptions: number | null
+  current_redemptions: number | null
+  availability_status: string | null
+  is_featured: boolean | null
+  image_url: string | null
+  terms_and_conditions: string | null
+}
+
 interface RestaurantMenuProps {
   restaurant: Restaurant
   categories: Category[]
   meals: Meal[]
   drinks: Drink[]
+  specials: Special[] // Added specials prop
+  gameDayMeals: Meal[] // Added gameDayMeals prop
 }
 
-interface FilterState {
-  categories: string[]
-  priceRange: [number, number]
-  dietaryCategory: string
-}
-
-export function RestaurantMenu({ restaurant, categories, meals, drinks }: RestaurantMenuProps) {
+export function RestaurantMenu({ restaurant, categories, meals, drinks, specials, gameDayMeals }: RestaurantMenuProps) {
   const [showTableModal, setShowTableModal] = useState(false)
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<FilterState>({
@@ -174,6 +193,8 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
     categories,
     meals,
     drinks,
+    specials, // Added specials dependency
+    gameDayMeals, // Added gameDayMeals dependency
     cart.table_number,
     cart.diner_name,
     setCurrentRestaurant,
@@ -327,9 +348,12 @@ export function RestaurantMenu({ restaurant, categories, meals, drinks }: Restau
                 <MenuTabs
                   meals={filteredMeals}
                   drinks={filteredDrinks}
+                  specials={specials} // Added specials prop to MenuTabs
+                  gameDayMeals={gameDayMeals} // Added gameDayMeals prop to MenuTabs
                   categories={categories}
                   filters={filters}
                   onFiltersChange={setFilters}
+                  restaurant={restaurant} // Pass restaurant prop to MenuTabs
                 />
               </div>
 

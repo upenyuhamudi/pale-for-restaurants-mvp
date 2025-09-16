@@ -65,6 +65,14 @@ async function RestaurantContent({ params }: RestaurantPageProps) {
     .neq("availability_status", "hidden")
     .order("name")
 
+  const { data: gameDayMeals } = await supabase
+    .from("meals")
+    .select("*")
+    .eq("restaurant_id", params.restaurantId)
+    .eq("game_day_menu", true)
+    .neq("availability_status", "hidden")
+    .order("name")
+
   // Fetch drinks for this restaurant
   const { data: drinks } = await supabase
     .from("drinks")
@@ -73,9 +81,24 @@ async function RestaurantContent({ params }: RestaurantPageProps) {
     .neq("availability_status", "hidden")
     .order("name")
 
+  // Fetch specials for this restaurant
+  const { data: specials } = await supabase
+    .from("specials")
+    .select("*")
+    .eq("restaurant_id", params.restaurantId)
+    .eq("availability_status", "available")
+    .order("name")
+
   return (
     <div className="min-h-screen bg-background">
-      <RestaurantMenu restaurant={restaurant} categories={categories || []} meals={meals || []} drinks={drinks || []} />
+      <RestaurantMenu
+        restaurant={restaurant}
+        categories={categories || []}
+        meals={meals || []}
+        drinks={drinks || []}
+        specials={specials || []}
+        gameDayMeals={gameDayMeals || []}
+      />
     </div>
   )
 }

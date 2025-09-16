@@ -617,6 +617,15 @@ export default function RestaurantDashboard() {
   const uniqueStatuses = [...new Set(orders.map((order) => order.status))]
 
   const filteredOrders = orders.filter((order) => {
+    console.log("[v0] Filtering order:", {
+      orderId: order.id,
+      tableNumber: order.table_number,
+      tableNumberType: typeof order.table_number,
+      tableFilter,
+      tableFilterType: typeof tableFilter,
+      comparison: order.table_number.toString() === tableFilter,
+    })
+
     // First filter out closed tables from all tabs except closed-tables
     if (orderTab !== "closed-tables" && order.table_closed) return false
 
@@ -633,8 +642,10 @@ export default function RestaurantDashboard() {
     // Status filter
     if (statusFilter !== "all" && order.status !== statusFilter) return false
 
-    // Table filter
-    if (tableFilter !== "all" && order.table_number !== tableFilter) return false
+    if (tableFilter !== "all" && order.table_number.toString() !== tableFilter.toString()) {
+      console.log("[v0] Table filter rejected order:", order.table_number, "vs", tableFilter)
+      return false
+    }
 
     return true
   })
@@ -862,7 +873,7 @@ export default function RestaurantDashboard() {
           case "sides":
             return drink.allowed_sides && drink.allowed_sides > 0
           case "preferences":
-            return drink.preferences && Array.isArray(drink.preferences) && drink.preferences.length > 0
+            return drink.preferences && Array.isArray(drink.preferences) && meals.preferences.length > 0
           default:
             return true
         }
