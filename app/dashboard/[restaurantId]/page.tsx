@@ -428,12 +428,28 @@ export default function RestaurantDashboard() {
   }
 
   const handleConfirmOrder = (order: Order) => {
-    setPendingOrderConfirmation({
-      id: order.id,
-      dinerName: order.diner_name,
-      tableNumber: order.table_number.toString(),
-    })
-    setShowWaiterModal(true)
+    if (order.table_closed) {
+      alert("Cannot confirm orders for closed tables")
+      return
+    }
+
+    // If the table already has a waiter assigned (from previous orders), use that waiter
+    const existingWaiter = orders.find(
+      (o) => o.table_number === order.table_number && o.waiter_name && !o.table_closed,
+    )?.waiter_name
+
+    if (existingWaiter) {
+      // Skip waiter modal and directly confirm with existing waiter
+      updateOrderStatus(order.id, "ready", existingWaiter)
+    } else {
+      // Show waiter modal for new table assignment
+      setPendingOrderConfirmation({
+        id: order.id,
+        dinerName: order.diner_name,
+        tableNumber: order.table_number.toString(),
+      })
+      setShowWaiterModal(true)
+    }
   }
 
   const confirmOrderWithWaiter = async (waiterName: string) => {
@@ -617,15 +633,6 @@ export default function RestaurantDashboard() {
   const uniqueStatuses = [...new Set(orders.map((order) => order.status))]
 
   const filteredOrders = orders.filter((order) => {
-    console.log("[v0] Filtering order:", {
-      orderId: order.id,
-      tableNumber: order.table_number,
-      tableNumberType: typeof order.table_number,
-      tableFilter,
-      tableFilterType: typeof tableFilter,
-      comparison: order.table_number.toString() === tableFilter,
-    })
-
     // First filter out closed tables from all tabs except closed-tables
     if (orderTab !== "closed-tables" && order.table_closed) return false
 
@@ -639,13 +646,7 @@ export default function RestaurantDashboard() {
     if (orderTab === "bill-requests" && !order.bill_requested) return false
     if (orderTab === "waiter-requests" && !order.waiter_called) return false
 
-    // Status filter
-    if (statusFilter !== "all" && order.status !== statusFilter) return false
-
-    if (tableFilter !== "all" && order.table_number.toString() !== tableFilter.toString()) {
-      console.log("[v0] Table filter rejected order:", order.table_number, "vs", tableFilter)
-      return false
-    }
+    if (tableFilter !== "all" && order.table_number.toString() !== tableFilter) return false
 
     return true
   })
@@ -700,33 +701,63 @@ export default function RestaurantDashboard() {
   const confirmedOrders = orders.filter((order) => order.status === "ready" && !order.table_closed)
   const servedOrders = orders.filter((order) => order.status === "completed" && !order.table_closed)
 
-  const groupedOpenOrders = openOrders.reduce((acc: any, order) => {
-    const table = order.table_number.toString()
-    if (!acc[table]) acc[table] = []
-    acc[table].push(order)
-    return acc
-  }, {})
+  const groupedOpenOrders = filteredOrders
+    .filter((order) => order.status === "pending")
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
 
-  const groupedConfirmedOrders = confirmedOrders.reduce((acc: any, order) => {
-    const table = order.table_number.toString()
-    if (!acc[table]) acc[table] = []
-    acc[table].push(order)
-    return acc
-  }, {})
+  const groupedConfirmedOrders = filteredOrders
+    .filter((order) => order.status === "ready")
+    .sort((a, b) => {
+      // Sort by created_at ascending (oldest orders first, which means longest wait time)
+      return new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+    })
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
 
-  const groupedServedOrders = servedOrders.reduce((acc: any, order) => {
-    const table = order.table_number.toString()
-    if (!acc[table]) acc[table] = []
-    acc[table].push(order)
-    return acc
-  }, {})
+  const groupedServedOrders = filteredOrders
+    .filter((order) => order.status === "completed")
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
 
-  const groupedClosedTables = closedTables.reduce((acc: any, order) => {
-    const table = order.table_number.toString()
-    if (!acc[table]) acc[table] = []
-    acc[table].push(order)
-    return acc
-  }, {})
+  const groupedClosedTables = filteredOrders
+    .filter((order) => order.table_closed)
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
+
+  const groupedBillRequests = filteredOrders
+    .filter((order) => order.bill_requested)
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
+
+  const groupedWaiterRequests = filteredOrders
+    .filter((order) => order.waiter_called)
+    .reduce((acc: any, order) => {
+      const table = order.table_number.toString()
+      if (!acc[table]) acc[table] = []
+      acc[table].push(order)
+      return acc
+    }, {})
 
   const fetchCategories = async () => {
     try {
@@ -1053,7 +1084,7 @@ export default function RestaurantDashboard() {
                       <nav className="flex space-x-8 w-full">
                         <button
                           onClick={() => setOrderTab("open")}
-                          className={`py-2 px-1 border-b-2 font-medium text-sm relative ${
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${
                             orderTab === "open"
                               ? "border-orange-500 text-orange-600"
                               : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1118,7 +1149,7 @@ export default function RestaurantDashboard() {
                         </button>
                         <button
                           onClick={() => setOrderTab("closed-tables")}
-                          className={`py-2 px-1 border-b-2 font-medium text-sm relative ${
+                          className={`py-2 px-1 border-b-2 font-medium text-sm ${
                             orderTab === "closed-tables"
                               ? "border-orange-500 text-orange-600"
                               : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
@@ -1137,23 +1168,7 @@ export default function RestaurantDashboard() {
                 </div>
 
                 <div className="bg-white p-4 rounded-lg border border-gray-200">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
-                      <select
-                        value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md text-sm"
-                      >
-                        <option value="all">All Statuses</option>
-                        {uniqueStatuses.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-1">Table</label>
                       <select
@@ -1175,7 +1190,6 @@ export default function RestaurantDashboard() {
                         variant="outline"
                         size="sm"
                         onClick={() => {
-                          setStatusFilter("all")
                           setTableFilter("all")
                         }}
                       >
@@ -1760,28 +1774,75 @@ export default function RestaurantDashboard() {
                       </Card>
                     ) : (
                       <div className="grid gap-4">
-                        {billRequests.map((order) => (
-                          <Card key={order.id}>
-                            <CardContent className="p-4">
-                              <div className="flex items-center justify-between">
-                                <div>
-                                  {order.waiter_name && (
-                                    <p className="text-sm text-gray-700 mb-1 py-3 font-semibold">
-                                      Waiter: {order.waiter_name}
+                        {billRequests.map((order) => {
+                          const tableOrders = orders.filter(
+                            (o) => o.table_number === order.table_number && !o.table_closed,
+                          )
+                          const totalItems = tableOrders.reduce(
+                            (sum, o) =>
+                              sum + (o.order_items?.reduce((itemSum, item) => itemSum + item.quantity, 0) || 0),
+                            0,
+                          )
+                          const servedItems = tableOrders
+                            .filter((o) => o.status === "completed")
+                            .reduce(
+                              (sum, o) =>
+                                sum + (o.order_items?.reduce((itemSum, item) => itemSum + item.quantity, 0) || 0),
+                              0,
+                            )
+                          const runningTotal = tableOrders.reduce((sum, o) => sum + (o.total || 0), 0)
+
+                          return (
+                            <Card key={order.id}>
+                              <CardContent className="p-4">
+                                <div className="flex items-start justify-between">
+                                  <div className="flex-1">
+                                    {order.waiter_name && (
+                                      <p className="text-sm text-gray-700 mb-2 font-semibold">
+                                        Waiter: {order.waiter_name}
+                                      </p>
+                                    )}
+                                    <CardTitle className="mb-2">Table {order.table_number}</CardTitle>
+                                    <p className="text-sm text-gray-500 mb-3">
+                                      {order.diner_name} - {getTimeSinceOrder(order.created_at)}
                                     </p>
-                                  )}
-                                  <CardTitle>Table {order.table_number}</CardTitle>
-                                  <p className="text-sm text-gray-500">
-                                    {order.diner_name} - {getTimeSinceOrder(order.created_at)}
-                                  </p>
+
+                                    <div className="bg-gray-50 rounded-lg p-3 mb-3">
+                                      <h4 className="font-medium text-gray-900 mb-2">Bill Summary</h4>
+                                      <div className="grid grid-cols-2 gap-4 text-sm">
+                                        <div>
+                                          <p className="text-gray-600">Items Ordered:</p>
+                                          <p className="font-medium">{totalItems}</p>
+                                        </div>
+                                        <div>
+                                          <p className="text-gray-600">Items Served:</p>
+                                          <p className="font-medium">{servedItems}</p>
+                                        </div>
+                                      </div>
+                                      <div className="mt-3 pt-3 border-t border-gray-200">
+                                        <div className="flex justify-between items-center">
+                                          <p className="text-gray-600">Running Total:</p>
+                                          <p className="text-lg font-bold text-green-600">
+                                            {formatCurrency(runningTotal)}
+                                          </p>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  <Button
+                                    onClick={() => dismissRequest(order.id, "bill")}
+                                    variant="outline"
+                                    size="sm"
+                                    className="ml-4"
+                                  >
+                                    Dismiss Request
+                                  </Button>
                                 </div>
-                                <Button onClick={() => dismissRequest(order.id, "bill")} variant="outline" size="sm">
-                                  Dismiss Request
-                                </Button>
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
+                              </CardContent>
+                            </Card>
+                          )
+                        })}
                       </div>
                     )}
                   </div>
