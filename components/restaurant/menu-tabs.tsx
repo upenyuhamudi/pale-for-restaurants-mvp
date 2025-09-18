@@ -89,6 +89,7 @@ export function MenuTabs({
   restaurant, // Added restaurant parameter
 }: MenuTabsProps) {
   const [activeTab, setActiveTab] = useState("menu")
+  const [activeCategoryTab, setActiveCategoryTab] = useState("all") // Added separate state for category tabs to prevent conflict with main tabs
   const { cart } = useCartStore()
 
   const availableMeals = meals.filter((meal) => meal.availability_status !== "sold_out")
@@ -120,6 +121,9 @@ export function MenuTabs({
 
   const handleTabChange = (tabId: string) => {
     setActiveTab(tabId)
+    if (tabId !== "menu") {
+      setActiveCategoryTab("all") // Reset category tab when switching main tabs
+    }
   }
 
   return (
@@ -168,7 +172,7 @@ export function MenuTabs({
         <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
           <TabsContent value="menu" className="mt-0">
             <div className="mb-4">
-              <Tabs value={activeTab === "menu" ? "all" : activeTab} onValueChange={setActiveTab} className="w-full">
+              <Tabs value={activeCategoryTab} onValueChange={setActiveCategoryTab} className="w-full">
                 <div className="sticky top-[260px] md:top-[300px] z-20 bg-background/95 backdrop-blur-sm border-b pb-2 mb-4 -mx-4 px-4">
                   <div className="overflow-x-auto scrollbar-hide">
                     <TabsList className="inline-flex h-auto p-1 bg-muted/20 min-w-full">
